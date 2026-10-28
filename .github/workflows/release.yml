@@ -1,0 +1,64 @@
+# Builds the release version and creates the GitHub/Gitea release v<pluginVersion> with the plugin zip.
+# Manual only. Version from pluginVersion in gradle.properties, release notes from its CHANGELOG.md section.
+# Runs on GitHub Actions and on Gitea Actions (see build.yml); the release goes through the REST API
+# (.github/scripts/create-release.sh), not a GitHub-only action.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      draft:
+        description: Create the release as a draft
+        type: boolean
+        default: true
+      prerelease:
+        description: Mark the release as a pre-release
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
+
+      - name: Read version
+        id: version
+        run: |
+          version=$(sed -nE 's/^pluginVersion *= *([^ ]+) *$/\1/p' gradle.properties)
+          if [ -z "$version" ]; then
+            echo "pluginVersion not found in gradle.properties" >&2
+            exit 1
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "Version ${version}"
+
+      # The same checks as the Build workflow, then the zip and the change notes of this version
+      - name: Build release
+        run: |
+          ./gradlew build buildPlugin --console=plain
+          ./gradlew getChangelog --project-version=${{ steps.version.outputs.version }} --no-header --no-links \
+            --output-file=build/release-notes.md --console=plain
+
+      - name: Create release
+        env:
+          RELEASE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          .github/scripts/create-release.sh "${{ steps.version.outputs.version }}" build/release-notes.md \
+            build/distributions/*-${{ steps.version.outputs.version }}.zip \
+            ${{ inputs.draft }} ${{ inputs.prerelease }}
