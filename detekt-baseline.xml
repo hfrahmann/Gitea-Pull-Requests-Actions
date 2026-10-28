@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:GiteaWorkflowCommandLine.kt:GiteaWorkflowCommandLine.Companion$value.length >= 2 &amp;&amp; (value.first() == '"' &amp;&amp; value.last() == '"' || value.first() == '\'' &amp;&amp; value.last() == '\'')</ID>
+    <ID>CyclomaticComplexMethod:GiteaActionsActions.kt:GiteaActionsOpenWorkflowFileAction$override fun perform</ID>
+    <ID>CyclomaticComplexMethod:GiteaActionsTreeComponentFactory.kt:GiteaActionsTreeComponentFactory$fun create: JComponent</ID>
+    <ID>CyclomaticComplexMethod:GiteaActionsTreeModel.kt:GiteaActionsTreeModel$@RequiresEdt fun setChildren</ID>
+    <ID>CyclomaticComplexMethod:GiteaActionsTreeRenderer.kt:GiteaActionsTreeRenderer$private fun customizeName</ID>
+    <ID>CyclomaticComplexMethod:GiteaConnectionTester.kt:GiteaConnectionTester$fun describe: @Nls String</ID>
+    <ID>CyclomaticComplexMethod:GiteaPullRequestsLoader.kt:GiteaPullRequestsLoader.Companion$internal fun matches: Boolean</ID>
+    <ID>CyclomaticComplexMethod:GiteaTimelineItem.kt:GiteaTimelineItem.Companion$private fun toItem: GiteaTimelineItem?</ID>
+    <ID>CyclomaticComplexMethod:GiteaWorkflowDispatch.kt:GiteaMiniYaml.Parser$private fun parseMapping: Pair&lt;Map&lt;String, Any?>, Int></ID>
+    <ID>CyclomaticComplexMethod:GiteaWorkflowDispatch.kt:GiteaMiniYaml.Parser$private fun parseSequence: Pair&lt;List&lt;Any?>, Int></ID>
+    <ID>CyclomaticComplexMethod:GiteaWorkflowRunState.kt:GiteaWorkflowRunState$private fun createCommandLine: GiteaWorkflowCommandLine</ID>
+    <ID>EmptyFunctionBlock:GiteaActionsTreeController.kt:GiteaActionsTreeController.&lt;no name provided>${}</ID>
+    <ID>EmptyFunctionBlock:GiteaFileEditorProvider.kt:GiteaPullRequestTimelineFileEditor${}</ID>
+    <ID>LoopWithTooManyJumpStatements:GiteaActionsTreeController.kt:GiteaActionsTreeController$for</ID>
+    <ID>LoopWithTooManyJumpStatements:GiteaActionsTreeModel.kt:GiteaActionsTreeModel$for</ID>
+    <ID>LoopWithTooManyJumpStatements:GiteaJobLogPanel.kt:GiteaJobLogPanel$for</ID>
+    <ID>LoopWithTooManyJumpStatements:GiteaPagination.kt:GiteaPagination$while</ID>
+    <ID>LoopWithTooManyJumpStatements:GiteaPullRequestDetailsViewModel.kt:GiteaPullRequestDetailsViewModel.Companion$for</ID>
+    <ID>LoopWithTooManyJumpStatements:GiteaWorkflowCommandLine.kt:GiteaWorkflowCommandLine.Companion$for</ID>
+    <ID>LoopWithTooManyJumpStatements:GiteaWorkflowDispatch.kt:GiteaMiniYaml.Parser$while</ID>
+    <ID>MagicNumber:GiteaActionsModel.kt:86_400_000L</ID>
+    <ID>MagicNumber:GiteaActionsTreeComponentFactory.kt:GiteaActionsTreeComponentFactory$0.4f</ID>
+    <ID>MagicNumber:GiteaActionsUiUtil.kt:GiteaActionsUiUtil$3600</ID>
+    <ID>MagicNumber:GiteaActionsUiUtil.kt:GiteaActionsUiUtil$60</ID>
+    <ID>MagicNumber:GiteaFiltersPanelFactory.kt:GiteaFiltersPanelFactory$12</ID>
+    <ID>MagicNumber:GiteaHttpStatusError.kt:GiteaHttpStatusError.Companion$405</ID>
+    <ID>MagicNumber:GiteaHttpStatusError.kt:GiteaHttpStatusError.Companion$599</ID>
+    <ID>MagicNumber:GiteaReviewTabComponentFactory.kt:GiteaReviewTabComponentFactory$6</ID>
+    <ID>MagicNumber:GiteaReviewThreadComponentFactory.kt:GiteaReviewThreadComponentFactory$32</ID>
+    <ID>MagicNumber:GiteaSecretsDialog.kt:GiteaSecretsDialog$380</ID>
+    <ID>MagicNumber:GiteaSecretsDialog.kt:GiteaSecretsDialog$640</ID>
+    <ID>MagicNumber:GiteaServerPath.kt:GiteaServerPath.Companion$443</ID>
+    <ID>MagicNumber:GiteaServerPath.kt:GiteaServerPath.Companion$80</ID>
+    <ID>MagicNumber:GiteaServersManager.kt:GiteaServerResolver$443</ID>
+    <ID>MagicNumber:GiteaServersManager.kt:GiteaServerResolver$80</ID>
+    <ID>MagicNumber:GiteaShareFilesDialog.kt:GiteaShareFilesDialog$0.75f</ID>
+    <ID>MagicNumber:GiteaShareFilesDialog.kt:GiteaShareFilesDialog$300</ID>
+    <ID>MaxLineLength:GiteaActionsTreeComponentFactory.kt:GiteaActionsTreeComponentFactory$val</ID>
+    <ID>MaxLineLength:GiteaActionsTreeController.kt:GiteaActionsTreeController$val runs = pr.head?.sha?.let { sha -> api.loadRuns(repository, GiteaActionRunsFilter(headSha = sha), 1, GiteaSettings.getInstance().runsPageSize).workflowRuns }.orEmpty()</ID>
+    <ID>MaxLineLength:GiteaActionsUiLogicTest.kt:GiteaActionsUiLogicTest$model.setChildren(root, listOf(GiteaActionsNode.Run(run(2, GiteaActionStatus.RUNNING), "CI", false), GiteaActionsNode.Run(run(1, GiteaActionStatus.SUCCESS), "CI", false)))</ID>
+    <ID>MaxLineLength:GiteaActionsUiLogicTest.kt:GiteaActionsUiLogicTest$model.setChildren(root, listOf(GiteaActionsNode.Run(run(3, GiteaActionStatus.QUEUED), "CI", false), GiteaActionsNode.Run(run(2, GiteaActionStatus.SUCCESS), "CI", false)))</ID>
+    <ID>MaxLineLength:GiteaNoTelemetryTest.kt:GiteaNoTelemetryTest$.</ID>
+    <ID>MaxLineLength:GiteaOAuthService.kt:LoopbackListener.Companion$ |&lt;body style=</ID>
+    <ID>MaxLineLength:GiteaProjectConnectionManager.kt:GiteaProjectConnectionManager$private</ID>
+    <ID>MaxLineLength:GiteaSecretsTest.kt:GiteaSecretsTest$assertEquals(emptyList&lt;GiteaRunner>(), GiteaRunners.load(api(), repository, GiteaUserDTO(10, "acme", type = "Organization"), GiteaUserDTO(4, "intellij-reviewer")))</ID>
+    <ID>MaxLineLength:GiteaSecretsTest.kt:GiteaSecretsTest$mock.enqueue(MockResponse.Builder().code(200).body("""{"total_count":1,"runners":[${runner(2, "org-runner", "\"status\":\"active\",\"busy\":true,")}]}""").build())</ID>
+    <ID>MaxLineLength:GiteaTimelineItemTest.kt:GiteaTimelineItemTest$path</ID>
+    <ID>MixedConditionOperators:GiteaActionsActions.kt:GiteaActionsApproveAction$status == GiteaActionStatus.QUEUED &amp;&amp; node.run.isPullRequestRun</ID>
+    <ID>MixedConditionOperators:GiteaJobLogPanel.kt:GiteaJobLogPanel$section.step == null &amp;&amp; job.status.isActive</ID>
+    <ID>MixedConditionOperators:GiteaRunners.kt:GiteaRunners$e.kind != GiteaHttpStatusError.Kind.FORBIDDEN &amp;&amp; e.kind != GiteaHttpStatusError.Kind.NOT_FOUND</ID>
+    <ID>MixedConditionOperators:GiteaVersion.kt:GiteaVersion$suffix.startsWith("+") &amp;&amp; suffix.contains("dev", ignoreCase = true)</ID>
+    <ID>MixedConditionOperators:GiteaWorkflowCommandLine.kt:GiteaWorkflowCommandLine.Companion$value.first() == '"' &amp;&amp; value.last() == '"'</ID>
+    <ID>MixedConditionOperators:GiteaWorkflowCommandLine.kt:GiteaWorkflowCommandLine.Companion$value.first() == '\'' &amp;&amp; value.last() == '\''</ID>
+    <ID>ReturnCount:GiteaActionsModel.kt:GiteaActionStatus.Companion$fun of: GiteaActionStatus</ID>
+    <ID>ReturnCount:GiteaShareDialog.kt:GiteaShareDialog$override fun doValidate: ValidationInfo?</ID>
+    <ID>SwallowedException:GiteaAccountsDetailsProvider.kt:GiteaAccountsDetailsProvider$e: GiteaCredentialsRefreshException</ID>
+    <ID>SwallowedException:GiteaAccountsDetailsProvider.kt:GiteaAccountsDetailsProvider$e: GiteaMissingCredentialsException</ID>
+    <ID>SwallowedException:GiteaPullRequestCreateViewModel.kt:GiteaPullRequestCreateViewModel$e: ProcessCanceledException</ID>
+    <ID>ThrowsCount:GiteaApi.kt:GiteaApiImpl$override suspend fun &lt;T> sendAndRead: GiteaResponse&lt;T></ID>
+    <ID>ThrowsCount:GiteaSecurityUtil.kt:GiteaSecurityUtil$suspend fun checkServer: GiteaServerMetadata</ID>
+    <ID>ThrowsCount:GiteaSecurityUtil.kt:GiteaSecurityUtil$suspend fun validateAndResolveUser: GiteaUserDTO</ID>
+    <ID>ThrowsCount:GiteaTaskRepository.kt:GiteaTaskRepository$private fun &lt;T> request: T</ID>
+    <ID>ThrowsCount:GiteaWorkflowRunConfiguration.kt:GiteaWorkflowRunConfiguration$override fun checkConfiguration</ID>
+    <ID>ThrowsCount:GiteaWorkflowRunState.kt:GiteaWorkflowRunState$private fun loadGiteaVariables: Map&lt;String, String></ID>
+    <ID>TooGenericExceptionCaught:GiteaAccountManager.kt:GiteaAccountManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaAccountsDetailsProvider.kt:GiteaAccountsDetailsProvider$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaActionsActions.kt:GiteaActionsDispatchAction$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaActionsActions.kt:GiteaActionsOpenWorkflowFileAction$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaActionsCurrentBranchService.kt:GiteaActionsCurrentBranchService$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaActionsDownloads.kt:GiteaActionsDownloads.&lt;no name provided>$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaActionsTreeController.kt:GiteaActionsTreeController$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaAnnotationGutterActionProvider.kt:e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaCloneViewModel.kt:GiteaCloneViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaCommentComponents.kt:GiteaCommentComponents$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaCommentEditorSupport.kt:GiteaCommentCompletionContributor$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaConnectionTester.kt:GiteaConnectionTester$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaCurrentBranchPullRequestService.kt:GiteaCurrentBranchPullRequestService$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaHttpAuthDataProvider.kt:GiteaGitAccounts$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaJobLogPanel.kt:GiteaJobLogPanel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaLoginUtil.kt:GiteaLoginUtil$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaProjectConnectionManager.kt:GiteaProjectConnectionManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaProjectConnectionManager.kt:GiteaProjectConnectionManager$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestChangesViewModel.kt:GiteaPullRequestChangesViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestCreateChangesViewModel.kt:GiteaPullRequestCreateChangesViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestCreateViewModel.kt:GiteaPullRequestCreateViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestDataProvider.kt:GiteaPullRequestDataProvider$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestDetailsViewModel.kt:GiteaPullRequestDetailsViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestDiffViewModel.kt:GiteaPullRequestDiffChangeViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestDiffViewModel.kt:GiteaPullRequestDiffViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestEditViewModel.kt:GiteaPullRequestEditViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestMergeViewModel.kt:GiteaPullRequestMergeViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestReviewData.kt:GiteaPullRequestReviewData$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestStatusViewModel.kt:GiteaPullRequestStatusViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestTimelineComponentFactory.kt:GiteaPullRequestTimelineComponentFactory$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestTimelineData.kt:GiteaPullRequestTimelineData$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestsFiltersViewModel.kt:GiteaPullRequestsFiltersViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaPullRequestsListViewModel.kt:GiteaPullRequestsListViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaReactionsModel.kt:GiteaReactionsModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaSecretDialogs.kt:GiteaSubmitDialog$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaSecretsComponentFactory.kt:GiteaSecretsComponentFactory$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaSecretsComponentFactory.kt:GiteaSecretsComponentFactory.Loader$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaSecretsComponentFactory.kt:GiteaSecretsComponentFactory.SecretsAndVariablesPanel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaServersManager.kt:GiteaServersManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaShareDialog.kt:GiteaShareDialog$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaShareProjectUtil.kt:GiteaShareProjectUtil$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaSubmitReviewAction.kt:e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaToolWindowProjectViewModel.kt:GiteaToolWindowProjectViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaWorkflowRemoteRun.kt:GiteaWorkflowRemoteRun$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GiteaWorkflowRunState.kt:GiteaWorkflowRunState$e: Exception</ID>
+    <ID>TooGenericExceptionThrown:GiteaTaskRepository.kt:GiteaTaskRepository$throw Exception(GiteaBundle.message("tasks.account.missing"))</ID>
+    <ID>TooGenericExceptionThrown:GiteaTaskRepository.kt:GiteaTaskRepository$throw Exception(GiteaBundle.message("tasks.repository.missing"))</ID>
+    <ID>TooGenericExceptionThrown:GiteaTaskRepository.kt:GiteaTaskRepository$throw Exception(e.localizedMessage, e)</ID>
+    <ID>TooGenericExceptionThrown:GiteaTaskRepository.kt:GiteaTaskRepository.&lt;no name provided>$throw Exception(GiteaBundle.message("tasks.issues.disabled", repository))</ID>
+    <ID>TooManyFunctions:GiteaPullRequestCreateViewModel.kt:GiteaPullRequestCreateViewModel : CodeReviewTitleDescriptionViewModel</ID>
+    <ID>TooManyFunctions:GiteaTaskRepository.kt:GiteaTask : Task</ID>
+    <ID>TooManyFunctions:GiteaTaskRepository.kt:GiteaTaskRepository : BaseRepository</ID>
+    <ID>TooManyFunctions:GiteaToolWindowConnectedProjectViewModel.kt:GiteaToolWindowConnectedProjectViewModel : ReviewToolwindowProjectViewModel</ID>
+    <ID>TooManyFunctions:actions.kt:de.hendrikfrahmann.giteaplugin.api.request.actions.kt</ID>
+    <ID>TooManyFunctions:pulls.kt:de.hendrikfrahmann.giteaplugin.api.request.pulls.kt</ID>
+    <ID>TooManyFunctions:repos.kt:de.hendrikfrahmann.giteaplugin.api.request.repos.kt</ID>
+  </CurrentIssues>
+</SmellBaseline>

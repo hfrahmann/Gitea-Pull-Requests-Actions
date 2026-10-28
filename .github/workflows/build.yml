@@ -1,0 +1,185 @@
+# Runs on GitHub Actions and on Gitea Actions (act_runner / gitea runner):
+# only `ubuntu-latest`, actions that Gitea resolves from github.com, artifact actions v4 (Gitea 1.24+).
+# setup-gradle is pinned by commit: its moving `v4` tag is a tag of a tag, which the runner's go-git can't resolve.
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
+
+      # `check` (part of build) runs detekt, the Kover minimums (koverVerifyCore) and the plugin project/structure checks
+      # Kover tasks run without the configuration cache (see build.gradle.kts), otherwise coverage reads 0 %.
+      # Reports in the same call: a second Gradle call would run all tests again.
+      - name: Build and test
+        run: ./gradlew build buildPlugin koverXmlReportCore koverHtmlReportCore --console=plain
+
+      - name: Upload test reports
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        # artifacts are a convenience; Gitea behind a sub-path proxy may refuse v4 uploads
+        continue-on-error: true
+        with:
+          name: test-reports
+          path: build/reports/tests
+
+      - name: Upload detekt report
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        # artifacts are a convenience; Gitea behind a sub-path proxy may refuse v4 uploads
+        continue-on-error: true
+        with:
+          name: detekt-report
+          path: build/reports/detekt
+
+      - name: Upload coverage report
+        if: ${{ success() || failure() }}
+        uses: actions/upload-artifact@v4
+        # artifacts are a convenience; Gitea behind a sub-path proxy may refuse v4 uploads
+        continue-on-error: true
+        with:
+          name: coverage-report
+          path: build/reports/kover
+
+      - name: Upload plugin zip
+        uses: actions/upload-artifact@v4
+        # artifacts are a convenience; Gitea behind a sub-path proxy may refuse v4 uploads
+        continue-on-error: true
+        with:
+          name: plugin-zip
+          path: build/distributions/*.zip
+
+  verify:
+    name: Plugin Verifier
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # The verifier downloads several full IDEs
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL || true
+          df -h /
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
+
+      # IntelliJ IDEA and PyCharm, every released major from sinceBuild on
+      - name: Verify plugin
+        run: ./gradlew verifyPlugin --console=plain
+
+      - name: Upload verifier reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        # artifacts are a convenience; Gitea behind a sub-path proxy may refuse v4 uploads
+        continue-on-error: true
+        with:
+          name: plugin-verifier-reports
+          path: build/reports/pluginVerifier
+
+  # Integration tests against a fresh Gitea of the oldest supported and the latest release. Gitea runs as a
+  # plain binary (.github/scripts/ci-gitea.sh), so no Docker or service containers are needed – the same on GitHub and Gitea.
+  gitea-compat:
+    name: Gitea ${{ matrix.gitea }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        gitea: [min, latest]
+    env:
+      GITEA_CI_DIR: /tmp/gitea-ci
+      GITEA_TEST_ENV: /tmp/gitea-ci/gitea-test.env
+      # no Actions runner in the fresh Gitea: tests that need finished runs are skipped
+      GITEA_TEST_NO_RUNNER: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
+
+      - name: Start and seed Gitea
+        run: .github/scripts/ci-gitea.sh ${{ matrix.gitea }} "$GITEA_CI_DIR" 3300
+
+      - name: Integration tests
+        run: ./gradlew integrationTest --console=plain
+
+      - name: Upload test reports and Gitea log
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        # artifacts are a convenience; Gitea behind a sub-path proxy may refuse v4 uploads
+        continue-on-error: true
+        with:
+          name: integration-reports-gitea-${{ matrix.gitea }}
+          path: |
+            build/reports/tests/integrationTest
+            /tmp/gitea-ci/gitea.out
+            /tmp/gitea-ci/log
+
+      - name: Stop Gitea
+        if: ${{ always() }}
+        run: .github/scripts/ci-gitea.sh stop "$GITEA_CI_DIR"
+
+  # IntelliJ inspections incl. Plugin DevKit and unused code, in Qodana's native mode (no Docker, see
+  # qodana.yaml). Fails on problems that are not in the baseline qodana.sarif.json.
+  qodana:
+    name: Qodana
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      # native mode analyses with the JDK of the job (project JDK 21)
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Qodana scan
+        uses: JetBrains/qodana-action@3e8d76ff0e0241618abd808682f426afe84bab3f # v2026.2.2
+        with:
+          args: --baseline qodana.sarif.json
+          pr-mode: true
+          # the check run lists counts only; the SARIF in the job artifacts names file and line of each problem
+          upload-result: true
+          # a restored project model points at a ~/.gradle that a fresh runner doesn't have (every library unresolved):
+          # always run the Gradle import
+          use-caches: false
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+

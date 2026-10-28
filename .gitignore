@@ -1,0 +1,17 @@
+/*.local.env
+
+# Gradle / IntelliJ Platform Gradle Plugin
+.gradle/
+build/
+.intellijPlatform/
+.kotlin/
+
+# IDE
+.idea/*
+!.idea/codeStyles/
+!.idea/.name
+!.idea/icon.svg
+*.iml
+out/
+.DS_Store
+/*token*

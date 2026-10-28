@@ -1,0 +1,132 @@
+# Deviations from detekt's default config only (buildUponDefaultConfig = true).
+# Layout is the IntelliJ formatter's job (.editorconfig, IntelliJ code style): the ktlint layout rules are off,
+# whitespace/import hygiene stays on. The code follows the IntelliJ sources: `catch`/`else`/`finally` on their own
+# line, long signatures and argument lists wrapped by the formatter – the ktlint rules against that are off too.
+
+complexity:
+  LongMethod:
+    # every if/else body takes its own lines (style/BracesOnIfStatements), a guard clause three instead of one
+    allowedLines: 75
+    excludes: ['**/test/**']
+  LongParameterList:
+    # UI factories and DTO-like constructors take many named arguments
+    allowedFunctionParameters: 8
+    allowedConstructorParameters: 10
+    ignoreDefaultParameters: true
+  TooManyFunctions:
+    excludes: ['**/test/**']
+    ignorePrivate: true
+
+naming:
+  MatchingDeclarationName:
+    # api/request/*.kt are named by API area (architecture convention), not by their single declaration
+    excludes: ['**/api/request/**']
+  ConstructorParameterNaming:
+    excludes: ['**/test/**']
+
+style:
+  MaxLineLength:
+    # de-facto style of the code base (most long lines are 141–160); .editorconfig matches
+    maxLineLength: 160
+    excludeCommentStatements: true
+  MagicNumber:
+    # HTTP status codes and UI sizes read better as literals
+    ignoreNumbers: ['-1', '0', '1', '2', '3', '4', '8', '10', '100', '200', '201', '204', '301', '302', '303', '307', '308', '400', '401', '403', '404', '409', '422', '500', '1000']
+    ignoreAnnotation: true
+  ReturnCount:
+    max: 4
+    excludeGuardClauses: true
+  # every if/else and loop body in braces on its own lines, also one-liners (user code-style rule, 2026-10-24)
+  BracesOnIfStatements:
+    active: true
+    singleLine: 'always'
+    multiLine: 'always'
+  MandatoryBracesLoops:
+    active: true
+
+ktlint:
+  # layout – the IntelliJ formatter decides
+  Wrapping:
+    active: false
+  SpacingAroundKeyword:
+    active: false
+  SpacingAroundColon:
+    active: false
+  FunctionReturnTypeSpacing:
+    active: false
+  SpacingAroundParens:
+    active: false
+  SpacingBetweenDeclarationsWithComments:
+    active: false
+  Indentation:
+    active: false
+  ArgumentListWrapping:
+    active: false
+  BinaryExpressionWrapping:
+    active: false
+  ChainMethodContinuation:
+    active: false
+  ChainWrapping:
+    active: false
+  CommentWrapping:
+    active: false
+  ConditionWrapping:
+    active: false
+  ContextReceiverListWrapping:
+    active: false
+  EnumWrapping:
+    active: false
+  ExpressionOperandWrapping:
+    active: false
+  IfElseWrapping:
+    active: false
+  KdocWrapping:
+    active: false
+  MultilineExpressionWrapping:
+    active: false
+  ParameterListWrapping:
+    active: false
+  ParameterWrapping:
+    active: false
+  PropertyWrapping:
+    active: false
+  StatementWrapping:
+    active: false
+  ClassSignature:
+    active: false
+  FunctionSignature:
+    active: false
+  FunctionLiteral:
+    active: false
+  MultiLineIfElse:
+    active: false
+  IfElseBracing:
+    active: false
+  TrailingCommaOnCallSite:
+    active: false
+  TrailingCommaOnDeclarationSite:
+    active: false
+  BlankLineBetweenWhenConditions:
+    active: false
+  BlankLineBeforeDeclaration:
+    active: false
+  AnnotationOnSeparateLine:
+    active: false
+  MaximumLineLength:
+    active: false
+  Filename:
+    active: false
+  FunctionExpressionBody:
+    active: false
+  StringTemplateIndent:
+    active: false
+  NoBlankLineInList:
+    active: false
+  NoConsecutiveComments:
+    active: false
+  NoSingleLineBlockComment:
+    active: false
+  Kdoc:
+    active: false
+  BackingPropertyNaming:
+    active: false

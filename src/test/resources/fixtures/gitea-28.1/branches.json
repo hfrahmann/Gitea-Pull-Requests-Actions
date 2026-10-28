@@ -1,0 +1,74 @@
+[
+    {
+        "name": "feature/greeting",
+        "commit": {
+            "id": "82600f6529ee08153a6ca9a50f4b66348523cbec",
+            "message": "Personalise greeting\n",
+            "url": "https://one.intranet/intellij-dev/plugin-playground/commit/82600f6529ee08153a6ca9a50f4b66348523cbec",
+            "author": {
+                "name": "intellij-dev",
+                "email": "intellij-dev@example.test",
+                "username": "intellij-dev"
+            },
+            "committer": {
+                "name": "intellij-dev",
+                "email": "intellij-dev@example.test",
+                "username": "intellij-dev"
+            },
+            "verification": {
+                "verified": false,
+                "reason": "gpg.error.not_signed_commit",
+                "signature": "",
+                "signer": null,
+                "payload": ""
+            },
+            "timestamp": "2026-10-16T17:04:31+02:00",
+            "added": null,
+            "removed": null,
+            "modified": null
+        },
+        "protected": false,
+        "required_approvals": 0,
+        "enable_status_check": false,
+        "status_check_contexts": [],
+        "user_can_push": true,
+        "user_can_merge": true,
+        "effective_branch_protection_name": ""
+    },
+    {
+        "name": "main",
+        "commit": {
+            "id": "789ad87dea3d374f41e7537fb490a583ed56a788",
+            "message": "Add CI workflow\n",
+            "url": "https://one.intranet/intellij-dev/plugin-playground/commit/789ad87dea3d374f41e7537fb490a583ed56a788",
+            "author": {
+                "name": "intellij-dev",
+                "email": "intellij-dev@example.test",
+                "username": "intellij-dev"
+            },
+            "committer": {
+                "name": "intellij-dev",
+                "email": "intellij-dev@example.test",
+                "username": "intellij-dev"
+            },
+            "verification": {
+                "verified": false,
+                "reason": "gpg.error.not_signed_commit",
+                "signature": "",
+                "signer": null,
+                "payload": ""
+            },
+            "timestamp": "2026-10-16T17:04:30+02:00",
+            "added": null,
+            "removed": null,
+            "modified": null
+        },
+        "protected": false,
+        "required_approvals": 0,
+        "enable_status_check": false,
+        "status_check_contexts": [],
+        "user_can_push": true,
+        "user_can_merge": true,
+        "effective_branch_protection_name": ""
+    }
+]

@@ -1,0 +1,22 @@
+# Qodana: IntelliJ inspections incl. Plugin DevKit (plugin.xml, actions, services) and unused code.
+# UnstableApiUsage is off: @ApiStatus.Experimental is allowed by the conventions, and internal / scheduled-for-removal
+# API already fails `verifyPlugin`.
+# CI runs it on pull requests and fails on problems that are not in the baseline (qodana.sarif.json). Native mode
+# (`ide`): the IDE runs inside the job container – no Docker, which doesn't work from Gitea job containers (the CLI
+# asks the host's daemon to mount paths that only exist in the job container).
+version: "1.0"
+ide: QDJVMC
+projectJDK: "21"
+profile:
+  name: qodana.recommended
+include:
+  - name: UnusedSymbol
+exclude:
+  - name: UnstableApiUsage
+  - name: All
+    paths:
+      - temp
+      - build
+      - dev
+      - .intellijPlatform
+failThreshold: 0

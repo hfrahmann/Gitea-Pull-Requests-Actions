@@ -1,0 +1,12 @@
+[
+    {
+        "filename": "src/Hello.kt",
+        "status": "changed",
+        "additions": 3,
+        "deletions": 2,
+        "changes": 5,
+        "html_url": "https://one.intranet/intellij-dev/plugin-playground/src/commit/82600f6529ee08153a6ca9a50f4b66348523cbec/src/Hello.kt",
+        "contents_url": "https://one.intranet/api/v1/repos/intellij-dev/plugin-playground/contents/src/Hello.kt?ref=82600f6529ee08153a6ca9a50f4b66348523cbec",
+        "raw_url": "https://one.intranet/intellij-dev/plugin-playground/raw/commit/82600f6529ee08153a6ca9a50f4b66348523cbec/src/Hello.kt"
+    }
+]

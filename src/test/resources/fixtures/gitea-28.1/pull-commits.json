@@ -1,0 +1,298 @@
+[
+    {
+        "url": "https://one.intranet/api/v1/repos/intellij-dev/plugin-playground/git/commits/82600f6529ee08153a6ca9a50f4b66348523cbec",
+        "sha": "82600f6529ee08153a6ca9a50f4b66348523cbec",
+        "created": "2026-10-16T17:04:31+02:00",
+        "html_url": "https://one.intranet/intellij-dev/plugin-playground/commit/82600f6529ee08153a6ca9a50f4b66348523cbec",
+        "commit": {
+            "url": "https://one.intranet/api/v1/repos/intellij-dev/plugin-playground/git/commits/82600f6529ee08153a6ca9a50f4b66348523cbec",
+            "author": {
+                "name": "intellij-dev",
+                "email": "intellij-dev@example.test",
+                "date": "2026-10-16T17:04:31+02:00"
+            },
+            "committer": {
+                "name": "intellij-dev",
+                "email": "intellij-dev@example.test",
+                "date": "2026-10-16T17:04:31+02:00"
+            },
+            "message": "Personalise greeting\n",
+            "tree": {
+                "url": "https://one.intranet/api/v1/repos/intellij-dev/plugin-playground/git/trees/9aca7adace1beab3bdc37e38977aa83496aff003",
+                "sha": "9aca7adace1beab3bdc37e38977aa83496aff003",
+                "created": "2026-10-16T17:04:31+02:00"
+            },
+            "verification": {
+                "verified": false,
+                "reason": "gpg.error.not_signed_commit",
+                "signature": "",
+                "signer": null,
+                "payload": ""
+            }
+        },
+        "author": {
+            "id": 3,
+            "login": "intellij-dev",
+            "type": "User",
+            "login_name": "",
+            "source_id": 0,
+            "full_name": "",
+            "email": "3+intellij-dev@noreply.localhost",
+            "avatar_url": "http://127.0.0.1:3000/avatars/310668d688caf5648636bb7cf8904a84",
+            "html_url": "http://127.0.0.1:3000/intellij-dev",
+            "language": "",
+            "is_admin": false,
+            "last_login": "0001-01-01T00:00:00Z",
+            "created": "2026-10-16T16:58:32+02:00",
+            "restricted": false,
+            "active": false,
+            "prohibit_login": false,
+            "location": "",
+            "website": "",
+            "description": "",
+            "visibility": "public",
+            "followers_count": 0,
+            "following_count": 0,
+            "starred_repos_count": 0,
+            "username": "intellij-dev"
+        },
+        "committer": {
+            "id": 3,
+            "login": "intellij-dev",
+            "type": "User",
+            "login_name": "",
+            "source_id": 0,
+            "full_name": "",
+            "email": "3+intellij-dev@noreply.localhost",
+            "avatar_url": "http://127.0.0.1:3000/avatars/310668d688caf5648636bb7cf8904a84",
+            "html_url": "http://127.0.0.1:3000/intellij-dev",
+            "language": "",
+            "is_admin": false,
+            "last_login": "0001-01-01T00:00:00Z",
+            "created": "2026-10-16T16:58:32+02:00",
+            "restricted": false,
+            "active": false,
+            "prohibit_login": false,
+            "location": "",
+            "website": "",
+            "description": "",
+            "visibility": "public",
+            "followers_count": 0,
+            "following_count": 0,
+            "starred_repos_count": 0,
+            "username": "intellij-dev"
+        },
+        "parents": [
+            {
+                "url": "https://one.intranet/api/v1/repos/intellij-dev/plugin-playground/git/commits/68006a41cabb46c8ec2afcb0f11016c878ba1356",
+                "sha": "68006a41cabb46c8ec2afcb0f11016c878ba1356",
+                "created": "0001-01-01T00:00:00Z"
+            }
+        ],
+        "files": [],
+        "stats": {
+            "total": 0,
+            "additions": 0,
+            "deletions": 0
+        }
+    },
+    {
+        "url": "https://one.intranet/api/v1/repos/intellij-dev/plugin-playground/git/commits/68006a41cabb46c8ec2afcb0f11016c878ba1356",
+        "sha": "68006a41cabb46c8ec2afcb0f11016c878ba1356",
+        "created": "2026-10-16T17:03:52+02:00",
+        "html_url": "https://one.intranet/intellij-dev/plugin-playground/commit/68006a41cabb46c8ec2afcb0f11016c878ba1356",
+        "commit": {
+            "url": "https://one.intranet/api/v1/repos/intellij-dev/plugin-playground/git/commits/68006a41cabb46c8ec2afcb0f11016c878ba1356",
+            "author": {
+                "name": "intellij-dev",
+                "email": "intellij-dev@example.test",
+                "date": "2026-10-16T17:03:52+02:00"
+            },
+            "committer": {
+                "name": "intellij-dev",
+                "email": "intellij-dev@example.test",
+                "date": "2026-10-16T17:03:52+02:00"
+            },
+            "message": "Personalise greeting\n",
+            "tree": {
+                "url": "https://one.intranet/api/v1/repos/intellij-dev/plugin-playground/git/trees/9aca7adace1beab3bdc37e38977aa83496aff003",
+                "sha": "9aca7adace1beab3bdc37e38977aa83496aff003",
+                "created": "2026-10-16T17:03:52+02:00"
+            },
+            "verification": {
+                "verified": false,
+                "reason": "gpg.error.not_signed_commit",
+                "signature": "",
+                "signer": null,
+                "payload": ""
+            }
+        },
+        "author": {
+            "id": 3,
+            "login": "intellij-dev",
+            "type": "User",
+            "login_name": "",
+            "source_id": 0,
+            "full_name": "",
+            "email": "3+intellij-dev@noreply.localhost",
+            "avatar_url": "http://127.0.0.1:3000/avatars/310668d688caf5648636bb7cf8904a84",
+            "html_url": "http://127.0.0.1:3000/intellij-dev",
+            "language": "",
+            "is_admin": false,
+            "last_login": "0001-01-01T00:00:00Z",
+            "created": "2026-10-16T16:58:32+02:00",
+            "restricted": false,
+            "active": false,
+            "prohibit_login": false,
+            "location": "",
+            "website": "",
+            "description": "",
+            "visibility": "public",
+            "followers_count": 0,
+            "following_count": 0,
+            "starred_repos_count": 0,
+            "username": "intellij-dev"
+        },
+        "committer": {
+            "id": 3,
+            "login": "intellij-dev",
+            "type": "User",
+            "login_name": "",
+            "source_id": 0,
+            "full_name": "",
+            "email": "3+intellij-dev@noreply.localhost",
+            "avatar_url": "http://127.0.0.1:3000/avatars/310668d688caf5648636bb7cf8904a84",
+            "html_url": "http://127.0.0.1:3000/intellij-dev",
+            "language": "",
+            "is_admin": false,
+            "last_login": "0001-01-01T00:00:00Z",
+            "created": "2026-10-16T16:58:32+02:00",
+            "restricted": false,
+            "active": false,
+            "prohibit_login": false,
+            "location": "",
+            "website": "",
+            "description": "",
+            "visibility": "public",
+            "followers_count": 0,
+            "following_count": 0,
+            "starred_repos_count": 0,
+            "username": "intellij-dev"
+        },
+        "parents": [
+            {
+                "url": "https://one.intranet/api/v1/repos/intellij-dev/plugin-playground/git/commits/1634759c019af7ff30b499c56e6d1f3282063fe8",
+                "sha": "1634759c019af7ff30b499c56e6d1f3282063fe8",
+                "created": "0001-01-01T00:00:00Z"
+            }
+        ],
+        "files": [],
+        "stats": {
+            "total": 0,
+            "additions": 0,
+            "deletions": 0
+        }
+    },
+    {
+        "url": "https://one.intranet/api/v1/repos/intellij-dev/plugin-playground/git/commits/1634759c019af7ff30b499c56e6d1f3282063fe8",
+        "sha": "1634759c019af7ff30b499c56e6d1f3282063fe8",
+        "created": "2026-10-16T16:59:07+02:00",
+        "html_url": "https://one.intranet/intellij-dev/plugin-playground/commit/1634759c019af7ff30b499c56e6d1f3282063fe8",
+        "commit": {
+            "url": "https://one.intranet/api/v1/repos/intellij-dev/plugin-playground/git/commits/1634759c019af7ff30b499c56e6d1f3282063fe8",
+            "author": {
+                "name": "intellij-dev",
+                "email": "intellij-dev@example.test",
+                "date": "2026-10-16T16:59:07+02:00"
+            },
+            "committer": {
+                "name": "intellij-dev",
+                "email": "intellij-dev@example.test",
+                "date": "2026-10-16T16:59:07+02:00"
+            },
+            "message": "Personalise greeting\n",
+            "tree": {
+                "url": "https://one.intranet/api/v1/repos/intellij-dev/plugin-playground/git/trees/9aca7adace1beab3bdc37e38977aa83496aff003",
+                "sha": "9aca7adace1beab3bdc37e38977aa83496aff003",
+                "created": "2026-10-16T16:59:07+02:00"
+            },
+            "verification": {
+                "verified": false,
+                "reason": "gpg.error.not_signed_commit",
+                "signature": "",
+                "signer": null,
+                "payload": ""
+            }
+        },
+        "author": {
+            "id": 3,
+            "login": "intellij-dev",
+            "type": "User",
+            "login_name": "",
+            "source_id": 0,
+            "full_name": "",
+            "email": "3+intellij-dev@noreply.localhost",
+            "avatar_url": "http://127.0.0.1:3000/avatars/310668d688caf5648636bb7cf8904a84",
+            "html_url": "http://127.0.0.1:3000/intellij-dev",
+            "language": "",
+            "is_admin": false,
+            "last_login": "0001-01-01T00:00:00Z",
+            "created": "2026-10-16T16:58:32+02:00",
+            "restricted": false,
+            "active": false,
+            "prohibit_login": false,
+            "location": "",
+            "website": "",
+            "description": "",
+            "visibility": "public",
+            "followers_count": 0,
+            "following_count": 0,
+            "starred_repos_count": 0,
+            "username": "intellij-dev"
+        },
+        "committer": {
+            "id": 3,
+            "login": "intellij-dev",
+            "type": "User",
+            "login_name": "",
+            "source_id": 0,
+            "full_name": "",
+            "email": "3+intellij-dev@noreply.localhost",
+            "avatar_url": "http://127.0.0.1:3000/avatars/310668d688caf5648636bb7cf8904a84",
+            "html_url": "http://127.0.0.1:3000/intellij-dev",
+            "language": "",
+            "is_admin": false,
+            "last_login": "0001-01-01T00:00:00Z",
+            "created": "2026-10-16T16:58:32+02:00",
+            "restricted": false,
+            "active": false,
+            "prohibit_login": false,
+            "location": "",
+            "website": "",
+            "description": "",
+            "visibility": "public",
+            "followers_count": 0,
+            "following_count": 0,
+            "starred_repos_count": 0,
+            "username": "intellij-dev"
+        },
+        "parents": [
+            {
+                "url": "https://one.intranet/api/v1/repos/intellij-dev/plugin-playground/git/commits/20f66c4226b6a644974df670b42882bbd1064f2d",
+                "sha": "20f66c4226b6a644974df670b42882bbd1064f2d",
+                "created": "0001-01-01T00:00:00Z"
+            }
+        ],
+        "files": [
+            {
+                "filename": "src/Hello.kt",
+                "status": "modified"
+            }
+        ],
+        "stats": {
+            "total": 5,
+            "additions": 3,
+            "deletions": 2
+        }
+    }
+]

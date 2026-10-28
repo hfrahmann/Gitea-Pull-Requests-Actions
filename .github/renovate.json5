@@ -1,0 +1,46 @@
+// Renovate: Gradle (libs.versions.toml, wrapper), the IDE the plugin compiles against, workflow actions.
+// Run by .github/workflows/renovate.yml on Gitea and GitHub (platform detected, token in the RENOVATE_TOKEN secret);
+// on GitHub the Renovate app works as well.
+// Gitea reads .github/ when there is no .gitea/ – keep everything here and never add a .gitea/ folder.
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: ['config:recommended', ':dependencyDashboard', 'helpers:pinGitHubActionDigestsToSemver'],
+  labels: ['dependencies'],
+  dependencyDashboardApproval: false,
+  // PR description: only the update table and the footer (no notes, configuration or rebase checkbox)
+  prBodyTemplate: '{{{header}}}{{{table}}}{{{footer}}}',
+  customManagers: [
+    {
+      // gradle.properties: platformVersion = the lowest supported IDE (sinceBuild); see packageRules
+      customType: 'regex',
+      managerFilePatterns: ['/^gradle\\.properties$/'],
+      matchStrings: ['platformVersion\\s*=\\s*(?<currentValue>\\S+)'],
+      datasourceTemplate: 'maven',
+      depNameTemplate: 'com.jetbrains.intellij.idea:idea',
+      registryUrlTemplate: 'https://www.jetbrains.com/intellij-repository/releases',
+    },
+  ],
+  packageRules: [
+    {
+      // compiled against the lowest supported major (sinceBuild 261): patch updates inside 2026.1.x only.
+      // Raising the major means raising pluginSinceBuild and the Kotlin apiVersion with it – a decision, not an update.
+      matchDepNames: ['com.jetbrains.intellij.idea:idea'],
+      allowedVersions: '/^2026\\.1\\./',
+    },
+    {
+      // the Kotlin compiler may move on; the apiVersion in build.gradle.kts stays tied to sinceBuild
+      matchPackageNames: ['org.jetbrains.kotlin.jvm', 'org.jetbrains.kotlin:**'],
+      groupName: 'Kotlin',
+    },
+    {
+      // detekt 2 is only available as alpha (1.23.x can't read Kotlin 2.4)
+      matchPackageNames: ['dev.detekt', 'dev.detekt:**'],
+      groupName: 'detekt',
+      ignoreUnstable: false,
+    },
+    {
+      matchManagers: ['github-actions'],
+      groupName: 'workflow actions',
+    },
+  ],
+}

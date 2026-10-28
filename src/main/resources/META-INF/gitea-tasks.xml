@@ -1,0 +1,6 @@
+<!-- Loaded only when the "Issue Trackers" plugin (com.intellij.tasks) is enabled. -->
+<idea-plugin>
+  <extensions defaultExtensionNs="com.intellij">
+    <tasks.repositoryType implementation="de.hendrikfrahmann.giteaplugin.tasks.GiteaTaskRepositoryType"/>
+  </extensions>
+</idea-plugin>

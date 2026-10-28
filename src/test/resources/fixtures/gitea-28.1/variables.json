@@ -1,0 +1,9 @@
+[
+    {
+        "owner_id": 0,
+        "repo_id": 1,
+        "name": "DEMO_VAR",
+        "data": "hello",
+        "description": ""
+    }
+]

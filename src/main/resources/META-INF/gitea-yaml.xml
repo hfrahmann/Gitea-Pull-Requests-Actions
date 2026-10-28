@@ -1,0 +1,8 @@
+<!-- Loaded only when the YAML plugin (org.jetbrains.plugins.yaml) is enabled: gutter icons in workflow files. -->
+<idea-plugin>
+  <extensions defaultExtensionNs="com.intellij">
+    <runLineMarkerContributor language="yaml"
+                              implementationClass="de.hendrikfrahmann.giteaplugin.actions.workflow.yaml.GiteaWorkflowRunLineMarkerContributor"/>
+    <runConfigurationProducer implementation="de.hendrikfrahmann.giteaplugin.actions.workflow.yaml.GiteaWorkflowRunConfigurationProducer"/>
+  </extensions>
+</idea-plugin>

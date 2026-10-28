@@ -1,0 +1,61 @@
+# Renovate: weekly dependency PRs from .github/renovate.json5, on Gitea and on GitHub. The job runs in the
+# Renovate image; the platform is detected at run time (Gitea's runner sets GITEA_ACTIONS=true).
+# Token (secret RENOVATE_TOKEN):
+#   Gitea:  required – token of a real account with write access (a bot user; scopes write:repository, read:user,
+#           write:issue). The workflow token can't be used: its user "gitea-actions" is a pseudo-user, and Renovate's
+#           PR lookup (`poster=<bot>`) fails with "user does not exist". Without the secret the job is skipped.
+#   GitHub: optional – falls back to the workflow token (PRs created with it don't start CI runs).
+# Optional on Gitea: RENOVATE_GITHUB_COM_TOKEN (read-only github.com token) for release notes and fewer rate limits.
+name: Renovate
+
+on:
+  schedule:
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: renovate
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/renovatebot/renovate:44
+    steps:
+      - name: Renovate
+        env:
+          RENOVATE_TOKEN_SECRET: ${{ secrets.RENOVATE_TOKEN }}
+          WORKFLOW_TOKEN: ${{ github.token }}
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
+          RENOVATE_ONBOARDING: "false"
+          RENOVATE_REQUIRE_CONFIG: required
+          # commits need an author with e-mail (bot users often have none); the repository variable overrides it
+          RENOVATE_GIT_AUTHOR: ${{ vars.RENOVATE_GIT_AUTHOR || 'Renovate Bot <bot@renovateapp.com>' }}
+          SERVER_URL: ${{ github.server_url }}
+          GITHUB_COM_TOKEN_SECRET: ${{ secrets.RENOVATE_GITHUB_COM_TOKEN }}
+          LOG_LEVEL: info
+        run: |
+          if [ "${GITEA_ACTIONS:-}" = "true" ]; then
+            if [ -z "$RENOVATE_TOKEN_SECRET" ]; then
+              echo "::warning::Renovate on Gitea needs the RENOVATE_TOKEN secret (a real account, see the workflow header) – skipping"
+              exit 0
+            fi
+            export RENOVATE_TOKEN="$RENOVATE_TOKEN_SECRET"
+            export RENOVATE_PLATFORM=gitea
+            export RENOVATE_ENDPOINT="$SERVER_URL/api/v1"
+            # clone from the address the runner reaches Gitea at, not the repository's clone_url (ROOT_URL, may be a proxy path)
+            export RENOVATE_GIT_URL=endpoint
+            # github.com lookups (actions, release notes) need their own token there
+            if [ -n "$GITHUB_COM_TOKEN_SECRET" ]; then export GITHUB_COM_TOKEN="$GITHUB_COM_TOKEN_SECRET"; fi
+          else
+            export RENOVATE_TOKEN="${RENOVATE_TOKEN_SECRET:-$WORKFLOW_TOKEN}"
+            export RENOVATE_PLATFORM=github
+          fi
+          echo "Renovate on $RENOVATE_PLATFORM (${RENOVATE_ENDPOINT:-github.com})"
+          renovate
