@@ -99,9 +99,18 @@ intellijPlatform {
         ides {
             // Released IDEs from sinceBuild on – no EAP builds. IntelliJ IDEA is one product since 2025.3 (no
             // separate Community builds for 261+); PyCharm as a second IDE without Java support.
+            // -PverifyEap: the latest EAP build of each IntelliJ IDEA version instead – the CI job "verify-eap", allowed
+            // to fail, warns before a release breaks the plugin (the Marketplace checks EAPs too).
+            val eap = providers.gradleProperty("verifyEap").isPresent
             select {
-                types = listOf(IntelliJPlatformType.IntellijIdea, IntelliJPlatformType.PyCharm)
-                channels = listOf(ProductRelease.Channel.RELEASE)
+                types = when {
+                    eap -> listOf(IntelliJPlatformType.IntellijIdea)
+                    else -> listOf(IntelliJPlatformType.IntellijIdea, IntelliJPlatformType.PyCharm)
+                }
+                channels = when {
+                    eap -> listOf(ProductRelease.Channel.EAP)
+                    else -> listOf(ProductRelease.Channel.RELEASE)
+                }
                 sinceBuild = providers.gradleProperty("pluginSinceBuild")
             }
         }
