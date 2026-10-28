@@ -105,6 +105,20 @@ jobs:
           name: plugin-verifier-reports
           path: build/reports/pluginVerifier
 
+      # One HTML report per IDE, with the IDE build in the file name (plugin-verifier-report-IU-263.html)
+      - name: Collect verifier HTML reports
+        if: ${{ always() }}
+        run: .github/scripts/verifier-reports.sh
+
+      - name: Upload verifier HTML reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: plugin-verifier-report-html
+          path: build/verifier-upload/*.html
+          if-no-files-found: ignore
+
   # The latest EAP build of each IntelliJ IDEA version (-PverifyEap): an early warning before a release breaks the plugin.
   # Allowed to fail – the workflow stays green, the job shows red.
   verify-eap:
@@ -139,6 +153,20 @@ jobs:
         with:
           name: plugin-verifier-reports-eap
           path: build/reports/pluginVerifier
+
+      # One HTML report per IDE, with the IDE build in the file name (plugin-verifier-report-IU-263.html)
+      - name: Collect verifier HTML reports
+        if: ${{ always() }}
+        run: .github/scripts/verifier-reports.sh
+
+      - name: Upload verifier HTML reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: plugin-verifier-report-html-eap
+          path: build/verifier-upload/*.html
+          if-no-files-found: ignore
 
   # Integration tests against a fresh Gitea of the oldest supported and the latest release. Gitea runs as a
   # plain binary (.github/scripts/ci-gitea.sh), so no Docker or service containers are needed – the same on GitHub and Gitea.

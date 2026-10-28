@@ -2,7 +2,6 @@ package de.hendrikfrahmann.giteaplugin.actions.workflow.run
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.CommandLineState
-import com.intellij.execution.configurations.PathEnvironmentVariableUtil
 import com.intellij.execution.process.KillableColoredProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
@@ -10,8 +9,10 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.progress.runBlockingCancellable
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
+import com.intellij.util.EnvironmentUtil
 import de.hendrikfrahmann.giteaplugin.actions.workflow.GiteaWorkflowFiles
 import de.hendrikfrahmann.giteaplugin.actions.workflow.GiteaWorkflowRemotes
 import de.hendrikfrahmann.giteaplugin.api.request.GiteaActionsScope
@@ -145,10 +146,24 @@ class GiteaWorkflowRunState(private val configuration: GiteaWorkflowRunConfigura
         return configured.takeIf { File(it).canExecute() }
       }
       for (name in names) {
-        PathEnvironmentVariableUtil.findExecutableInPathOnAnyOS(name)?.let { return it.path }
+        findOnPath(name)?.let { return it.path }
         EXTRA_DIRS.map { File(it, name) }.firstOrNull { it.canExecute() }?.let { return it.path }
       }
       return null
+    }
+
+    // Own lookup: PathEnvironmentVariableUtil.findExecutableInPathOnAnyOS is scheduled for removal in 2026.3.
+    // EnvironmentUtil has the shell's PATH, also when the IDE was started from the Dock.
+    private fun findOnPath(name: String): File? {
+      val path = EnvironmentUtil.getValue("PATH") ?: return null
+      val fileNames = when {
+        SystemInfo.isWindows -> listOf("$name.exe", name)
+        else -> listOf(name)
+      }
+      return path.split(File.pathSeparator)
+        .filter { it.isNotBlank() }
+        .flatMap { dir -> fileNames.map { File(dir, it) } }
+        .firstOrNull { it.isFile && it.canExecute() }
     }
   }
 }
