@@ -32,6 +32,8 @@ GitHub and GitLab plugins, plus **Gitea Actions** in their own tool window.
 **Issues**
 - Gitea issues as tasks (*Tools | Tasks | Servers*, needs the bundled "Issue Trackers" plugin).
 
+---
+
 Requires the Git plugin and Gitea 28 or newer. Not affiliated with the Gitea project.
 <!-- Plugin description end -->
 
