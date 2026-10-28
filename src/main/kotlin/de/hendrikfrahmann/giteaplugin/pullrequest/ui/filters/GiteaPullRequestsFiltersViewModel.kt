@@ -107,7 +107,6 @@ class GiteaPullRequestsFiltersViewModel(
       try {
         batches().collect {
           loaded += it
-          emit(IncrementallyComputedValue.partialSuccess(loaded.toList()))
         }
         emit(IncrementallyComputedValue.success(loaded.toList()))
       }
