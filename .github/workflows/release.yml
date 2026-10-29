@@ -2,6 +2,9 @@
 # Manual only. Version from pluginVersion in gradle.properties, release notes from its CHANGELOG.md section.
 # Runs on GitHub Actions and on Gitea Actions (see build.yml); the release goes through the REST API
 # (.github/scripts/create-release.sh), not a GitHub-only action.
+# Optionally uploads the plugin to the JetBrains Marketplace (publishPlugin). Secrets: PUBLISH_TOKEN (Marketplace →
+# My Tokens), optionally CERTIFICATE_CHAIN, PRIVATE_KEY, PRIVATE_KEY_PASSWORD for signing. Plugin page:
+# https://plugins.jetbrains.com/plugin/35606-gitea-pull-requests--actions – uploads are moderated before they go public.
 name: Release
 
 on:
@@ -13,6 +16,10 @@ on:
         default: true
       prerelease:
         description: Mark the release as a pre-release
+        type: boolean
+        default: false
+      publish:
+        description: Publish the plugin to the JetBrains Marketplace
         type: boolean
         default: false
 
@@ -62,3 +69,18 @@ jobs:
           .github/scripts/create-release.sh "${{ steps.version.outputs.version }}" build/release-notes.md \
             build/distributions/*-${{ steps.version.outputs.version }}.zip \
             ${{ inputs.draft }} ${{ inputs.prerelease }}
+
+      # Signs the zip when the signing secrets are set, then uploads it (see intellijPlatform.signing/publishing)
+      - name: Publish to JetBrains Marketplace
+        if: ${{ inputs.publish }}
+        env:
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+        run: |
+          if [ -z "$PUBLISH_TOKEN" ]; then
+            echo "Secret PUBLISH_TOKEN is not set" >&2
+            exit 1
+          fi
+          ./gradlew publishPlugin --console=plain
