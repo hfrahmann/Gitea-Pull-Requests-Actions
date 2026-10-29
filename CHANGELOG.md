@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-29
+
+### Changed
+
+- Pull request timeline: texts are limited to a readable width again, like in the GitHub and GitLab plugins.
+
 ## [1.0.0] - 2026-10-28
 
 ### Added
