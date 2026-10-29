@@ -13,9 +13,14 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -35,11 +40,19 @@ class GiteaPullRequestsListViewModel(
   private val createPager: (GiteaPullRequestsFiltersValue) -> GiteaPullRequestsLoader.Pager,
   /** Called with every loaded PR, e.g. to cache it by number. */
   private val onLoaded: (List<GiteaPullRequestShort>) -> Unit = {},
+  /** `false`: changed since the user last opened it (dot in the list); `null`: no marker. */
+  val isSeen: (GiteaPullRequestShort) -> Boolean? = { null },
+  /** Emits whenever [isSeen] may answer differently. */
+  val seenUpdates: Flow<Any?> = flowOf(Unit),
 ) : ReviewListViewModel {
   private val cs = parentCs.childScope()
 
   private val _items = MutableStateFlow<List<GiteaPullRequestShort>>(emptyList())
   val items: StateFlow<List<GiteaPullRequestShort>> = _items.asStateFlow()
+
+  /** Some loaded PR is unseen – the dot on the tool window icon. */
+  val hasUpdates: StateFlow<Boolean> = combine(_items, seenUpdates) { items, _ -> items.any { isSeen(it) == false } }
+    .stateIn(cs, SharingStarted.Eagerly, false)
 
   private val _loading = MutableStateFlow(false)
   val loading: StateFlow<Boolean> = _loading.asStateFlow()
