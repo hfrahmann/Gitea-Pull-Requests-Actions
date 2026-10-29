@@ -95,7 +95,7 @@ object GiteaPullRequestTimelineComponentFactory {
   private val threadType = ComponentType.COMPACT
 
   /** Timeline texts are limited to the platform's reading width, like in the GitHub and GitLab plugins. */
-  private val contentWidth: Int? = CodeReviewChatItemUIUtil.TEXT_CONTENT_WIDTH
+  private val contentWidth: Int = CodeReviewChatItemUIUtil.TEXT_CONTENT_WIDTH
 
   /**
    * A spinner until the timeline is loaded and its markdown rendered (at most [PRERENDER_TIMEOUT]) – otherwise the raw
