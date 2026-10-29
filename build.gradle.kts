@@ -105,6 +105,8 @@ intellijPlatform {
 
     publishing {
         token = providers.environmentVariable("PUBLISH_TOKEN").filter { it.isNotBlank() }
+        // -PpublishHidden=true: the version passes the review but stays hidden until it is released on the Marketplace
+        hidden = providers.gradleProperty("publishHidden").map { it.toBoolean() }.orElse(false)
     }
 
     pluginVerification {
