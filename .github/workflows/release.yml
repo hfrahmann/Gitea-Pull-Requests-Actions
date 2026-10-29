@@ -22,6 +22,10 @@ on:
         description: Publish the plugin to the JetBrains Marketplace
         type: boolean
         default: false
+      hidden:
+        description: Marketplace only - keep the version hidden after the review until it is released by hand
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -83,4 +87,4 @@ jobs:
             echo "Secret PUBLISH_TOKEN is not set" >&2
             exit 1
           fi
-          ./gradlew publishPlugin --console=plain
+          ./gradlew publishPlugin -PpublishHidden=${{ inputs.hidden }} --console=plain
