@@ -26,8 +26,8 @@ import de.hendrikfrahmann.giteaplugin.util.GiteaIcons
 import de.hendrikfrahmann.giteaplugin.util.childScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -81,14 +81,17 @@ internal class GiteaPullRequestsToolWindowController(private val project: Projec
 
   /** A dot on the stripe icon while the list has unseen PRs, like GitHub's (in the selected button's color while active). */
   @OptIn(ExperimentalCoroutinesApi::class)
+  @Suppress("UsePropertyAccessSyntax") // `toolWindow.icon` is read-only in Kotlin, it needs the setter
   private suspend fun manageIconBadge(toolWindow: ToolWindow, vm: GiteaToolWindowProjectViewModel) {
     val badgeColor = JBColor.lazy {
       UIManager.getColor("ToolWindow.Button.selectedForeground")?.takeIf { toolWindow.isActive } ?: JBUI.CurrentTheme.IconBadge.INFORMATION
     }
     vm.connectedProjectVm.flatMapLatest { it?.listVm?.hasUpdates ?: flowOf(false) }.distinctUntilChanged().collect { hasUpdates ->
-      withContext(Dispatchers.EDT) {
-        toolWindow.setIcon(if (hasUpdates) IconManager.getInstance().withIconBadge(GiteaIcons.GiteaToolWindow, badgeColor) else GiteaIcons.GiteaToolWindow)
+      val icon = when {
+        hasUpdates -> IconManager.getInstance().withIconBadge(GiteaIcons.GiteaToolWindow, badgeColor)
+        else -> GiteaIcons.GiteaToolWindow
       }
+      withContext(Dispatchers.EDT) { toolWindow.setIcon(icon) }
     }
   }
 
