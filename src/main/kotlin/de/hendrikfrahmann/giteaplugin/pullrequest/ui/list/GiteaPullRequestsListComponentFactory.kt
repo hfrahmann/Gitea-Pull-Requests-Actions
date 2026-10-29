@@ -20,10 +20,12 @@ import icons.CollaborationToolsIcons
 import java.util.Date
 
 object GiteaPullRequestsListComponentFactory {
-  fun create(listModel: CollectionListModel<GiteaPullRequestShort>, avatars: IconsProvider<GiteaUserDTO>): JBList<GiteaPullRequestShort> =
-    ReviewListComponentFactory(listModel).create { presentation(it, avatars) }
+  /** [isSeen] `false` shows the "unseen" dot, see [GiteaPullRequestsListViewModel.isSeen]. */
+  fun create(listModel: CollectionListModel<GiteaPullRequestShort>, avatars: IconsProvider<GiteaUserDTO>,
+             isSeen: (GiteaPullRequestShort) -> Boolean? = { null }): JBList<GiteaPullRequestShort> =
+    ReviewListComponentFactory(listModel).create { presentation(it, avatars, isSeen(it)) }
 
-  fun presentation(pr: GiteaPullRequestShort, avatars: IconsProvider<GiteaUserDTO>): ReviewListItemPresentation =
+  fun presentation(pr: GiteaPullRequestShort, avatars: IconsProvider<GiteaUserDTO>, seen: Boolean? = null): ReviewListItemPresentation =
     ReviewListItemPresentation.Simple(
       title = pr.title,
       id = "#${pr.number}",
@@ -42,7 +44,7 @@ object GiteaPullRequestsListComponentFactory {
       },
       // always shown, like GitHub
       commentsCounter = ReviewListItemPresentation.CommentsCounter(pr.comments.toInt(), GiteaBundle.message("pull.request.list.comments", pr.comments)),
-      seen = null,
+      seen = seen,
     )
 
   /** `null` for open non-draft PRs, like GitHub/GitLab. */

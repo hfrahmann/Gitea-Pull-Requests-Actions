@@ -28,7 +28,10 @@ import de.hendrikfrahmann.giteaplugin.api.request.milestonesFlow
 import de.hendrikfrahmann.giteaplugin.notification.GiteaNotificationIds
 import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestCheckout
 import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestDataProvider
+import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestSeenState
 import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestShort
+import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestState
+import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestViewedState
 import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestsLoader
 import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaReviewThread
 import de.hendrikfrahmann.giteaplugin.pullrequest.file.GiteaVirtualFileSystem
@@ -40,6 +43,7 @@ import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFi
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersViewModel
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsPersistentFiltersHistory
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.list.GiteaPullRequestsListViewModel
+import de.hendrikfrahmann.giteaplugin.refresh.GiteaRefreshService
 import de.hendrikfrahmann.giteaplugin.repository.GiteaProjectConnection
 import de.hendrikfrahmann.giteaplugin.repository.GiteaProjectsManager
 import de.hendrikfrahmann.giteaplugin.ui.action.GiteaWebUrls
@@ -62,6 +66,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Nls
 import java.awt.Image
+import java.util.Date
 import javax.imageio.ImageIO
 import javax.swing.Icon
 import kotlin.time.Duration.Companion.seconds
@@ -96,9 +101,13 @@ class GiteaToolWindowConnectedProjectViewModel(
 
   private val loader = GiteaPullRequestsLoader(connection.api, repository.path, connection.currentUser?.login)
 
+  private val seenState = GiteaPullRequestSeenState.getInstance(project)
+
   override val listVm: GiteaPullRequestsListViewModel = GiteaPullRequestsListViewModel(
     cs, filterVm, repository.path.toString(), avatarIconsProvider, loader::createPager,
     onLoaded = { page -> pullRequests.value += page.associateBy { it.number } },
+    isSeen = ::isSeen,
+    seenUpdates = seenState.updates,
   )
 
   private val tabsHelper = ReviewToolwindowTabsStateHolder<GiteaReviewTab, GiteaReviewTabViewModel>()
@@ -109,6 +118,7 @@ class GiteaToolWindowConnectedProjectViewModel(
 
   init {
     cs.launch { refreshOpenPullRequestsOnRemoteChanges() }
+    cs.launch { pollList() }
   }
 
   fun findPullRequest(number: Long): GiteaPullRequestShort? = pullRequests.value[number]
@@ -124,6 +134,35 @@ class GiteaToolWindowConnectedProjectViewModel(
   fun refreshOnShow() {
     listVm.reloadInPlace()
     refreshOpenPullRequests()
+  }
+
+  /**
+   * Like GitHub: open PRs of the user – authored, requested as reviewer or assigned – get a marker, `false` while they
+   * changed since the user last opened them (or were never opened). `null` (no marker) for all others and anonymously.
+   */
+  private fun isSeen(pr: GiteaPullRequestShort): Boolean? {
+    val login = connection.currentUser?.login ?: return null
+    val involved = pr.author?.login == login || (pr.reviewers.orEmpty() + pr.assignees).any { it.login == login }
+    if (pr.state != GiteaPullRequestState.OPEN || !involved) {
+      return null
+    }
+    val updatedAt = pr.updatedAt ?: return null
+    val lastSeen = seenState.lastSeen(seenKey(pr.number)) ?: return false
+    return updatedAt.time <= lastSeen
+  }
+
+  /** PR [number] was opened (details or timeline); [updatedAt] as loaded from the server, if known. */
+  fun markSeen(number: Long, updatedAt: Date? = findPullRequest(number)?.updatedAt) =
+    seenState.markSeen(seenKey(number), updatedAt)
+
+  private fun seenKey(number: Long) = GiteaPullRequestViewedState.key(repository.serverPath.toString(), repository.path.toString(), number)
+
+  /** New PRs and changes show up in the list (and as the dot on the tool window icon) also while it is hidden. */
+  private suspend fun pollList() {
+    while (true) {
+      GiteaRefreshService.scheduler.awaitNextPoll("Gitea pull request list of ${repository.path}", active = false)
+      listVm.reloadInPlace()
+    }
   }
 
   /** One per PR and connection, shared by its details and timeline tabs. */
@@ -156,6 +195,7 @@ class GiteaToolWindowConnectedProjectViewModel(
   }
 
   fun openPullRequest(number: Long, focus: Boolean) {
+    markSeen(number)
     tabsHelper.showTab(GiteaReviewTab.PullRequest(number), { tab ->
       GiteaReviewTabViewModel.PullRequest(cs, tab.number, dataProvider(tab.number), findPullRequest(tab.number)?.title)
     })
@@ -169,6 +209,7 @@ class GiteaToolWindowConnectedProjectViewModel(
    * list keeps the keyboard, so Enter on the next PR works right away.
    */
   fun openTimeline(number: Long, focus: Boolean = true) {
+    markSeen(number)
     cs.launch(Dispatchers.EDT) {
       val file = findFile(number, timeline = true) ?: return@launch
       FileEditorManager.getInstance(project).openFile(file, focus)

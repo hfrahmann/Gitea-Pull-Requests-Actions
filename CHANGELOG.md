@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Pull requests: a dot marks open pull requests you authored, review or are assigned to that changed since you last
+  opened them, in the list and on the tool window icon (like GitHub). The list is also refreshed in the background.
+
 ## [1.0.1] - 2026-10-29
 
 ### Changed

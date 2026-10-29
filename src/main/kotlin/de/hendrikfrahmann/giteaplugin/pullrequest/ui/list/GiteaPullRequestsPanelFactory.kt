@@ -47,9 +47,12 @@ object GiteaPullRequestsPanelFactory {
   /** [logIn]: re-login for the connection's account, `null` hides the action. */
   fun create(scope: CoroutineScope, listVm: GiteaPullRequestsListViewModel, logIn: (() -> Unit)?): JComponent {
     val listModel = CollectionListModel<GiteaPullRequestShort>()
-    val list = GiteaPullRequestsListComponentFactory.create(listModel, listVm.avatarIconsProvider)
+    val list = GiteaPullRequestsListComponentFactory.create(listModel, listVm.avatarIconsProvider, listVm.isSeen)
     scope.launch(Dispatchers.EDT) {
       listVm.items.collect { items -> showItems(list, listModel, items) }
+    }
+    scope.launch(Dispatchers.EDT) {
+      listVm.seenUpdates.collect { list.repaint() }
     }
 
     val scrollPane = ReviewListUtil.wrapWithLazyVerticalScroll(scope, list, listVm::requestMore)

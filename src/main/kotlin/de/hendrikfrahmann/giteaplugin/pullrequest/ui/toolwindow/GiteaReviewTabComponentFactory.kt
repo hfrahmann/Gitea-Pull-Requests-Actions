@@ -111,6 +111,8 @@ class GiteaReviewTabComponentFactory(
       val wrapper = Wrapper(GiteaPullRequestDetailsComponentFactory.createLoadingSpinner())
       cs.launch(Dispatchers.EDT) {
         dataProvider.snapshot.collect { result ->
+          // changes loaded while the PR is on screen don't make it "unseen"
+          result?.getOrNull()?.takeIf { wrapper.isShowing }?.let { projectVm.markSeen(number, it.pullRequest.updatedAt) }
           val error = result?.exceptionOrNull()
           if (error != null && wrapper.targetComponent !is DetailsMarker) {
             wrapper.setContent(GiteaPullRequestDetailsComponentFactory.createError(cs, error) { dataProvider.refresh() })

@@ -14,19 +14,28 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
+import com.intellij.ui.IconManager
+import com.intellij.ui.JBColor
 import com.intellij.util.cancelOnDispose
+import com.intellij.util.ui.JBUI
 import de.hendrikfrahmann.giteaplugin.pullrequest.action.GiteaPullRequestsActionKeys
 import de.hendrikfrahmann.giteaplugin.pullrequest.action.GiteaSwitchProjectAndAccountAction
 import de.hendrikfrahmann.giteaplugin.refresh.shownEvents
 import de.hendrikfrahmann.giteaplugin.util.GiteaBundle
+import de.hendrikfrahmann.giteaplugin.util.GiteaIcons
 import de.hendrikfrahmann.giteaplugin.util.childScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.swing.UIManager
 
 /**
  * "Gitea Pull Requests" tool window (not "Pull Requests" – that id belongs to the GitHub plugin). Available only while
@@ -63,6 +72,22 @@ internal class GiteaPullRequestsToolWindowController(private val project: Projec
       }
       launch {
         toolWindow.shownEvents().collect { vm.connectedProjectVm.value?.refreshOnShow() }
+      }
+      launch {
+        manageIconBadge(toolWindow, vm)
+      }
+    }
+  }
+
+  /** A dot on the stripe icon while the list has unseen PRs, like GitHub's (in the selected button's color while active). */
+  @OptIn(ExperimentalCoroutinesApi::class)
+  private suspend fun manageIconBadge(toolWindow: ToolWindow, vm: GiteaToolWindowProjectViewModel) {
+    val badgeColor = JBColor.lazy {
+      UIManager.getColor("ToolWindow.Button.selectedForeground")?.takeIf { toolWindow.isActive } ?: JBUI.CurrentTheme.IconBadge.INFORMATION
+    }
+    vm.connectedProjectVm.flatMapLatest { it?.listVm?.hasUpdates ?: flowOf(false) }.distinctUntilChanged().collect { hasUpdates ->
+      withContext(Dispatchers.EDT) {
+        toolWindow.setIcon(if (hasUpdates) IconManager.getInstance().withIconBadge(GiteaIcons.GiteaToolWindow, badgeColor) else GiteaIcons.GiteaToolWindow)
       }
     }
   }
