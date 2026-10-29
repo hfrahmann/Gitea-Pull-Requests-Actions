@@ -95,6 +95,18 @@ intellijPlatform {
         }
     }
 
+    // Secrets of the Release workflow. Unset secrets arrive as empty variables there – blank counts as missing, so
+    // without a certificate the zip goes out unsigned.
+    signing {
+        certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN").filter { it.isNotBlank() }
+        privateKey = providers.environmentVariable("PRIVATE_KEY").filter { it.isNotBlank() }
+        password = providers.environmentVariable("PRIVATE_KEY_PASSWORD").filter { it.isNotBlank() }
+    }
+
+    publishing {
+        token = providers.environmentVariable("PUBLISH_TOKEN").filter { it.isNotBlank() }
+    }
+
     pluginVerification {
         ides {
             // Released IDEs from sinceBuild on – no EAP builds. IntelliJ IDEA is one product since 2025.3 (no
