@@ -1,14 +1,11 @@
 
-<div style="text-align: center">
-<img src=".readme/gitea-logo.svg" width="100px" />
-<br />
-
-[![Last Build](https://github.com/hfrahmann/Gitea-Pull-Requests-Actions/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/hfrahmann/Gitea-Pull-Requests-Actions/actions/workflows/build.yml)
-![GitHub Release](https://img.shields.io/github/v/release/hfrahmann/Gitea-Pull-Requests-Actions)
-![GitHub License](https://img.shields.io/github/license/hfrahmann/Gitea-Pull-Requests-Actions)
-
-[Get plugin on Jetbrains Marketplace](https://plugins.jetbrains.com/plugin/35606-gitea-pull-requests--actions/)
-</div>
+<p align="center">
+  <img src="https://github.com/hfrahmann/Gitea-Pull-Requests-Actions/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/hfrahmann/Gitea-Pull-Requests-Actions/actions/workflows/build.yml" />
+  <img src="https://img.shields.io/github/v/release/hfrahmann/Gitea-Pull-Requests-Actions" />
+  <img src="https://img.shields.io/github/license/hfrahmann/Gitea-Pull-Requests-Actions" />
+  <br /><br />
+  <a href="https://plugins.jetbrains.com/plugin/35606-gitea-pull-requests--actions/">Get plugin on Jetbrains Marketplace</a>
+</p>
 
 # Gitea Pull Requests & Actions - Plugin for IntelliJ
 
