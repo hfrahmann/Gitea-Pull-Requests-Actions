@@ -1,4 +1,18 @@
-# Gitea plugin for IntelliJ
+
+<div style="text-align: center">
+<img src=".readme/gitea-logo.svg" width="100px" />
+<br />
+
+[![Last Build](https://github.com/hfrahmann/Gitea-Pull-Requests-Actions/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/hfrahmann/Gitea-Pull-Requests-Actions/actions/workflows/build.yml)
+![GitHub Release](https://img.shields.io/github/v/release/hfrahmann/Gitea-Pull-Requests-Actions)
+![GitHub License](https://img.shields.io/github/license/hfrahmann/Gitea-Pull-Requests-Actions)
+
+[Get plugin on Jetbrains Marketplace](https://plugins.jetbrains.com/plugin/35606-gitea-pull-requests--actions/)
+</div>
+
+# Gitea Pull Requests & Actions - Plugin for IntelliJ
+
+Unofficial plugin for IntelliJ to review Pull Requests, view actions and work with Gitea.
 
 > [!NOTE]
 > This project was built to a large extent with AI assistance, using [Claude Code](https://claude.com/claude-code).
