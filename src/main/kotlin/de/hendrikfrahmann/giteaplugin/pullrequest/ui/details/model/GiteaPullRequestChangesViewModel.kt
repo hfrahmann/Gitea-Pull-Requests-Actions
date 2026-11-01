@@ -142,6 +142,8 @@ class GiteaPullRequestChangesViewModel(
     protected val cs: CoroutineScope = scope.childScope()
     override val project: Project get() = this@GiteaPullRequestChangesViewModel.project
     override val changes: List<RefComparisonChange> = changeList.changes
+    /** The whole PR has no changes, not just the selected commit. */
+    val isPullRequestEmpty: Boolean get() = this@GiteaPullRequestChangesViewModel.changes.value?.getOrNull()?.comparison?.changes?.isEmpty() == true
 
     private val _selectionRequests = MutableSharedFlow<CodeReviewChangeListViewModel.SelectionRequest>(replay = 1)
     override val selectionRequests: SharedFlow<CodeReviewChangeListViewModel.SelectionRequest> = _selectionRequests.asSharedFlow()

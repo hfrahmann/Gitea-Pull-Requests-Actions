@@ -1,5 +1,6 @@
 package de.hendrikfrahmann.giteaplugin.pullrequest.data
 
+import com.intellij.collaboration.util.RefComparisonChange
 import com.intellij.openapi.diff.impl.patch.FilePatch
 import com.intellij.openapi.diff.impl.patch.PatchReader
 import com.intellij.openapi.project.Project
@@ -11,6 +12,7 @@ import de.hendrikfrahmann.giteaplugin.api.request.loadPullRequestDiff
 import de.hendrikfrahmann.giteaplugin.repository.GiteaProjectConnection
 import git4idea.changes.GitBranchComparisonResult
 import git4idea.changes.GitCommitShaWithPatches
+import git4idea.changes.GitTextFilePatchWithHistory
 import git4idea.remote.hosting.GitCodeReviewUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -46,6 +48,10 @@ class GiteaPullRequestChangesLoader(
     val baseSha = pullRequest.base?.sha ?: mergeBase
 
     val commits = api.loadPullRequestCommits(repository, number).asReversed()
+    // no commits (head merged into or reset to the base): git4idea's comparison needs at least one
+    if (commits.isEmpty()) {
+      return@coroutineScope GiteaPullRequestChanges(commits, EmptyComparison(baseSha, mergeBase, pullRequest.head?.sha ?: mergeBase))
+    }
     val fetch = async { ensureRevisionsFetched(commits.map { it.sha } + mergeBase) }
 
     val commitsWithPatches = loadCommitPatches(commits)
@@ -78,6 +84,14 @@ class GiteaPullRequestChangesLoader(
     // Gitea keeps every PR head under refs/pull/N/head, also for PRs from forks; fetch without storing a ref
     GitCodeReviewUtils.fetch(gitRepository, remote, "refs/pull/${pullRequest.number}/head:")
     check(GitCodeReviewUtils.testRevisionsExist(gitRepository, revisions)) { "Could not fetch all revisions of #${pullRequest.number}" }
+  }
+
+  private class EmptyComparison(override val baseSha: String, override val mergeBaseSha: String, override val headSha: String)
+    : GitBranchComparisonResult {
+    override val changes: List<RefComparisonChange> = emptyList()
+    override val commits: List<GitCommitShaWithPatches> = emptyList()
+    override val changesByCommits: Map<String, List<RefComparisonChange>> = emptyMap()
+    override val patchesByChange: Map<RefComparisonChange, GitTextFilePatchWithHistory> = emptyMap()
   }
 
   companion object {
