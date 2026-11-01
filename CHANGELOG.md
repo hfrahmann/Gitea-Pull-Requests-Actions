@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Pull request timeline: texts are limited to a readable width again, like in the GitHub and GitLab plugins.
 
+### Fixed
+
+- Pull request details: a pull request without commits (e.g. closed after its branch was merged elsewhere) showed
+  "Could not load the changes – List is empty." It now shows "No changes between `branch` and `base`", like GitHub and
+  GitLab.
+
 ## [1.0.0] - 2026-10-28
 
 ### Added

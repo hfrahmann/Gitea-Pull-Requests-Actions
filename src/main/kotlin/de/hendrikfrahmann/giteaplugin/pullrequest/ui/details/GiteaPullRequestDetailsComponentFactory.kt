@@ -19,6 +19,7 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.UiDataProvider
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.ScrollPaneFactory
@@ -157,6 +158,14 @@ object GiteaPullRequestDetailsComponentFactory {
     }
   }
 
+  /** Muted and naming both branches, like GitHub's and GitLab's empty diff; not the error style. */
+  private fun createNoChanges(vm: GiteaPullRequestDetailsViewModel): JComponent {
+    val text = GiteaBundle.message("pull.request.details.changes.none", vm.branchesVm.sourceBranch.value,
+                                   vm.snapshot.value.pullRequest.base?.ref.orEmpty())
+    // an HTML pane, so long branch names wrap
+    return centered(SimpleHtmlPane(StringUtil.escapeXmlEntities(text)).apply { foreground = UIUtil.getContextHelpForeground() })
+  }
+
   // an HTML pane, so long git messages (whole remote URLs) wrap instead of being cut off
   private val changesErrorPresenter: ErrorStatusPresenter<Throwable> =
     ErrorStatusPresenter.simple(GiteaBundle.message("pull.request.details.changes.error"), descriptionProvider = { it.localizedMessage })
@@ -194,6 +203,7 @@ object GiteaPullRequestDetailsComponentFactory {
         when {
           result == null -> createLoadingSpinner()
           error != null -> centered(ErrorStatusPanelFactory.create(error, changesErrorPresenter))
+          result.getOrThrow().isPullRequestEmpty -> createNoChanges(vm)
           else -> createChangesTree(this, result.getOrThrow())
         }
       }.collect {
