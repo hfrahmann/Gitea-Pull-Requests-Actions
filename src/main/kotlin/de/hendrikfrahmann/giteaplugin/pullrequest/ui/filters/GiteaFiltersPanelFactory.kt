@@ -14,6 +14,7 @@ import com.intellij.ui.awt.RelativePoint
 import com.intellij.util.ui.ColorIcon
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaUserDTO
 import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestState
+import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersValue.DraftFilter
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersValue.UserFilterValue
 import de.hendrikfrahmann.giteaplugin.util.GiteaBundle
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +25,7 @@ import java.awt.event.ActionEvent
 import javax.swing.AbstractAction
 import javax.swing.JComponent
 
-/** Search field with quick filters and the State / Author / Assignee / Reviewer / Label / Milestone drop-downs. */
+/** Search field with quick filters and the State / Author / Assignee / Reviewer / Label / Milestone / Draft drop-downs. */
 class GiteaFiltersPanelFactory(vm: GiteaPullRequestsFiltersViewModel)
   : ReviewListSearchPanelFactory<GiteaPullRequestsFiltersValue, GiteaPullRequestsQuickFilter, GiteaPullRequestsFiltersViewModel>(vm) {
 
@@ -64,6 +65,13 @@ class GiteaFiltersPanelFactory(vm: GiteaPullRequestsFiltersViewModel)
         }, popupConfig(vm))?.title
       },
     ),
+    DropDownComponentFactory(vm.draftFilterState).create(
+      viewScope,
+      filterName = GiteaBundle.message("pull.request.list.filter.draft"),
+      items = DraftFilter.entries,
+      onSelect = {},
+      valuePresenter = ::draftText,
+    ),
   )
 
   override fun GiteaPullRequestsQuickFilter.getQuickFilterTitle(): @Nls String = when (this) {
@@ -99,6 +107,11 @@ class GiteaFiltersPanelFactory(vm: GiteaPullRequestsFiltersViewModel)
       GiteaPullRequestState.CLOSED -> GiteaBundle.message("pull.request.state.closed")
     }
 
+    fun draftText(draft: DraftFilter): @Nls String = when (draft) {
+      DraftFilter.HIDE -> GiteaBundle.message("pull.request.list.filter.draft.hide")
+      DraftFilter.ONLY -> GiteaBundle.message("pull.request.list.filter.draft.only")
+    }
+
     @Suppress("HardCodedStringLiteral")
     fun shortText(value: GiteaPullRequestsFiltersValue): @Nls String = buildString {
       with(value) {
@@ -122,6 +135,9 @@ class GiteaFiltersPanelFactory(vm: GiteaPullRequestsFiltersViewModel)
         }
         if (milestone != null) {
           append("milestone:\"$milestone\" ")
+        }
+        if (draft != null) {
+          append("draft:\"${draftText(draft)}\" ")
         }
       }
     }

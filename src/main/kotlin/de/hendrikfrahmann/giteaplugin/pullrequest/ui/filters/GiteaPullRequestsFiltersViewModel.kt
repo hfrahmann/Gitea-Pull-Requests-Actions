@@ -8,6 +8,7 @@ import de.hendrikfrahmann.giteaplugin.api.dto.GiteaLabelDTO
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaMilestoneDTO
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaUserDTO
 import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestState
+import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersValue.DraftFilter
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersValue.UserFilterValue
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -76,6 +77,7 @@ class GiteaPullRequestsFiltersViewModel(
   val reviewerFilterState: MutableStateFlow<UserFilterValue?> = searchState.partialState(GiteaPullRequestsFiltersValue::reviewer) { copy(reviewer = it) }
   val labelFilterState: MutableStateFlow<String?> = searchState.partialState(GiteaPullRequestsFiltersValue::label) { copy(label = it) }
   val milestoneFilterState: MutableStateFlow<String?> = searchState.partialState(GiteaPullRequestsFiltersValue::milestone) { copy(milestone = it) }
+  val draftFilterState: MutableStateFlow<DraftFilter?> = searchState.partialState(GiteaPullRequestsFiltersValue::draft) { copy(draft = it) }
 
   private val reloadSignal = MutableSharedFlow<Unit>(replay = 1).apply { tryEmit(Unit) }
 

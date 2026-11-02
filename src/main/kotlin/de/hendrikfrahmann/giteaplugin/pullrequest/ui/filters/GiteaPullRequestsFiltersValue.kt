@@ -15,10 +15,14 @@ data class GiteaPullRequestsFiltersValue(
   val reviewer: UserFilterValue? = null,
   val label: String? = null,
   val milestone: String? = null,
+  /** Draft (WIP) PRs: hide them or show only them. */
+  val draft: DraftFilter? = null,
 ) : ReviewListSearchValue {
 
   override val filterCount: Int
-    get() = listOf(state, author, assignee, reviewer, label, milestone).count { it != null }
+    get() = listOf(state, author, assignee, reviewer, label, milestone, draft).count { it != null }
+
+  enum class DraftFilter { HIDE, ONLY }
 
   data class UserFilterValue(val login: @NlsSafe String, val fullName: @NlsSafe String?) {
     @get:NlsSafe

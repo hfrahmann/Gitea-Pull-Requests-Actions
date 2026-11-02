@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-02
+
+### Added
+
+- Pull request list: a "Draft" filter hides draft (WIP) pull requests or shows only them.
+
 ## [1.0.1] - 2026-11-01
 
 ### Added
