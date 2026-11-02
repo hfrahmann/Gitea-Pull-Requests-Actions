@@ -10,6 +10,7 @@ import de.hendrikfrahmann.giteaplugin.api.request.loadPullRequestIssuesPage
 import de.hendrikfrahmann.giteaplugin.api.request.loadPullRequestsPage
 import de.hendrikfrahmann.giteaplugin.api.request.searchReviewRequestedPullRequestsPage
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersValue
+import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersValue.DraftFilter
 
 /**
  * Pages through the PRs of [repository] that match a filter. Gitea has no endpoint that supports every filter, so
@@ -23,6 +24,7 @@ import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFi
  * | label / milestone     | ids      | names                | names                  |
  * | review requested from | –        | –                    | only the current user  |
  * | merged vs. closed     | –        | –                    | –                      |
+ * | draft (WIP)           | –        | –                    | –                      |
  */
 class GiteaPullRequestsLoader(
   private val api: GiteaApi,
@@ -120,6 +122,9 @@ class GiteaPullRequestsLoader(
         return false
       }
       if (filter.milestone != null && pr.milestone != filter.milestone) {
+        return false
+      }
+      if (filter.draft != null && pr.isDraft != (filter.draft == DraftFilter.ONLY)) {
         return false
       }
       if (filter.reviewer != null && source == Source.PULLS &&

@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.Tag
 import com.intellij.util.xmlb.annotations.XCollection
 import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestState
+import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersValue.DraftFilter
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersValue.UserFilterValue
 
 /** Last filter and search history of the PR list, per project (workspace file). */
@@ -36,6 +37,7 @@ class GiteaPullRequestsPersistentFiltersHistory : PersistentStateComponent<Gitea
     var reviewerName: String? = null
     var label: String? = null
     var milestone: String? = null
+    var draft: String? = null
 
     fun toValue(): GiteaPullRequestsFiltersValue = GiteaPullRequestsFiltersValue(
       searchQuery = query,
@@ -45,6 +47,7 @@ class GiteaPullRequestsPersistentFiltersHistory : PersistentStateComponent<Gitea
       reviewer = reviewer?.let { UserFilterValue(it, reviewerName) },
       label = label,
       milestone = milestone,
+      draft = draft?.let { runCatching { DraftFilter.valueOf(it) }.getOrNull() },
     )
 
     companion object {
@@ -56,6 +59,7 @@ class GiteaPullRequestsPersistentFiltersHistory : PersistentStateComponent<Gitea
         reviewer = value.reviewer?.login; reviewerName = value.reviewer?.fullName
         label = value.label
         milestone = value.milestone
+        draft = value.draft?.name
       }
     }
   }

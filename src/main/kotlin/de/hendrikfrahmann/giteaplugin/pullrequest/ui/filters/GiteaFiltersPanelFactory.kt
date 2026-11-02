@@ -14,6 +14,7 @@ import com.intellij.ui.awt.RelativePoint
 import com.intellij.util.ui.ColorIcon
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaUserDTO
 import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestState
+import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersValue.DraftFilter
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersValue.UserFilterValue
 import de.hendrikfrahmann.giteaplugin.util.GiteaBundle
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +25,7 @@ import java.awt.event.ActionEvent
 import javax.swing.AbstractAction
 import javax.swing.JComponent
 
-/** Search field with quick filters and the State / Author / Assignee / Reviewer / Label / Milestone drop-downs. */
+/** Search field with quick filters and the State / Author / Assignee / Reviewer / Label / Milestone / Draft drop-downs. */
 class GiteaFiltersPanelFactory(vm: GiteaPullRequestsFiltersViewModel)
   : ReviewListSearchPanelFactory<GiteaPullRequestsFiltersValue, GiteaPullRequestsQuickFilter, GiteaPullRequestsFiltersViewModel>(vm) {
 
@@ -32,13 +33,8 @@ class GiteaFiltersPanelFactory(vm: GiteaPullRequestsFiltersViewModel)
   override fun getShortText(searchValue: GiteaPullRequestsFiltersValue): @Nls String = shortText(searchValue)
 
   override fun createFilters(viewScope: CoroutineScope): List<JComponent> = listOf(
-    DropDownComponentFactory(vm.stateFilterState).create(
-      viewScope,
-      filterName = GiteaBundle.message("pull.request.list.filter.state"),
-      items = listOf(GiteaPullRequestState.OPEN, GiteaPullRequestState.MERGED, GiteaPullRequestState.CLOSED),
-      onSelect = {},
-      valuePresenter = ::stateText,
-    ),
+    fixedValuesFilter(viewScope, vm.stateFilterState, GiteaBundle.message("pull.request.list.filter.state"),
+                      listOf(GiteaPullRequestState.OPEN, GiteaPullRequestState.MERGED, GiteaPullRequestState.CLOSED), ::stateText),
     userFilter(viewScope, vm.authorFilterState, GiteaBundle.message("pull.request.list.filter.author"), vm.users),
     DropDownComponentFactory(vm.labelFilterState).create(
       viewScope,
@@ -64,6 +60,7 @@ class GiteaFiltersPanelFactory(vm: GiteaPullRequestsFiltersViewModel)
         }, popupConfig(vm))?.title
       },
     ),
+    fixedValuesFilter(viewScope, vm.draftFilterState, GiteaBundle.message("pull.request.list.filter.draft"), DraftFilter.entries, ::draftText),
   )
 
   override fun GiteaPullRequestsQuickFilter.getQuickFilterTitle(): @Nls String = when (this) {
@@ -73,6 +70,22 @@ class GiteaFiltersPanelFactory(vm: GiteaPullRequestsFiltersViewModel)
     is GiteaPullRequestsQuickFilter.ReviewRequested -> GiteaBundle.message("pull.request.list.filter.quick.review.requested")
     is GiteaPullRequestsQuickFilter.Closed -> GiteaBundle.message("pull.request.list.filter.quick.closed")
   }
+
+  /** A few fixed values: no search field unless the user starts typing. */
+  private fun <T : Any> fixedValuesFilter(
+    viewScope: CoroutineScope,
+    state: MutableStateFlow<T?>,
+    filterName: @Nls String,
+    items: List<T>,
+    presenter: (T) -> @Nls String,
+  ): JComponent = DropDownComponentFactory(state).create(
+    viewScope,
+    filterName,
+    valuePresenter = presenter,
+    chooseValue = { point ->
+      ChooserPopupUtil.showChooserPopup(point, items, { PopupItemPresentation.Simple(presenter(it)) }, PopupConfig(alwaysShowSearchField = false))
+    },
+  )
 
   private fun userFilter(
     viewScope: CoroutineScope,
@@ -99,6 +112,11 @@ class GiteaFiltersPanelFactory(vm: GiteaPullRequestsFiltersViewModel)
       GiteaPullRequestState.CLOSED -> GiteaBundle.message("pull.request.state.closed")
     }
 
+    fun draftText(draft: DraftFilter): @Nls String = when (draft) {
+      DraftFilter.HIDE -> GiteaBundle.message("pull.request.list.filter.draft.hide")
+      DraftFilter.ONLY -> GiteaBundle.message("pull.request.list.filter.draft.only")
+    }
+
     @Suppress("HardCodedStringLiteral")
     fun shortText(value: GiteaPullRequestsFiltersValue): @Nls String = buildString {
       with(value) {
@@ -122,6 +140,9 @@ class GiteaFiltersPanelFactory(vm: GiteaPullRequestsFiltersViewModel)
         }
         if (milestone != null) {
           append("milestone:\"$milestone\" ")
+        }
+        if (draft != null) {
+          append("draft:\"${draftText(draft)}\" ")
         }
       }
     }

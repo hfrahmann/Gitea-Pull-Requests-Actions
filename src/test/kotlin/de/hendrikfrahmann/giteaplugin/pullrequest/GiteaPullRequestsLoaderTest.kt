@@ -14,6 +14,7 @@ import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestsLoader.S
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaFiltersPanelFactory
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersHistoryModel
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersValue
+import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersValue.DraftFilter
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersValue.UserFilterValue
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFiltersViewModel
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsPersistentFiltersHistory
@@ -62,8 +63,9 @@ class GiteaPullRequestsLoaderTest {
   private fun page(body: String, total: Int) =
     MockResponse.Builder().code(200).body(body).addHeader("Content-Type", "application/json").addHeader("X-Total-Count", total.toString()).build()
 
-  private fun pr(number: Int, state: String = "open", merged: Boolean = false, reviewers: String = "[]", title: String = "PR $number") =
-    """{"id":$number,"number":$number,"title":"$title","state":"$state","merged":$merged,"user":{"id":3,"login":"intellij-dev"},
+  private fun pr(number: Int, state: String = "open", merged: Boolean = false, reviewers: String = "[]", title: String = "PR $number",
+                 draft: Boolean = false) =
+    """{"id":$number,"number":$number,"title":"$title","state":"$state","merged":$merged,"draft":$draft,"user":{"id":3,"login":"intellij-dev"},
        "requested_reviewers":$reviewers,"labels":[{"id":1,"name":"bug","color":"ee0701"}],"mergeable":false}"""
 
   private fun issue(number: Int, repoName: String = "intellij-dev/pr-list-playground", merged: Boolean = false, state: String = "open") =
@@ -163,21 +165,37 @@ class GiteaPullRequestsLoaderTest {
   }
 
   @Test
+  fun `drafts are hidden or kept alone, skipping pages without a match`() = runBlocking {
+    mock.enqueue(page("[${pr(4, draft = true)},${pr(3, draft = true)}]", 4))
+    mock.enqueue(page("[${pr(2)},${pr(1, draft = true)}]", 4))
+    val hidden = loader().createPager(GiteaPullRequestsFiltersValue(state = GiteaPullRequestState.OPEN, draft = DraftFilter.HIDE))
+    assertEquals(listOf(2L), hidden.loadMore().map { it.number })
+    assertEquals(mapOf("state" to "open", "page" to "1", "limit" to "2"), takeQuery().second)
+    takeQuery()
+
+    mock.enqueue(page("[${issue(7)}]", 1))
+    val only = loader().createPager(GiteaPullRequestsFiltersValue(searchQuery = "avatar", draft = DraftFilter.ONLY)).loadMore()
+    assertEquals(listOf(7L), only.map { it.number })
+  }
+
+  @Test
   fun `filter history survives xml beans`() {
-    val value = GiteaPullRequestsFiltersValue("avatar", GiteaPullRequestState.MERGED, me, UserFilterValue("a", null), me, "bug", "v1.0")
+    val value = GiteaPullRequestsFiltersValue("avatar", GiteaPullRequestState.MERGED, me, UserFilterValue("a", null), me, "bug", "v1.0",
+                                              DraftFilter.HIDE)
     val history = GiteaPullRequestsPersistentFiltersHistory()
     history.lastFilter = value
     history.history = listOf(value, GiteaPullRequestsFiltersValue.EMPTY)
     val copy = GiteaPullRequestsPersistentFiltersHistory().apply { loadState(history.state) }
     assertEquals(value, copy.lastFilter)
     assertEquals(listOf(value, GiteaPullRequestsFiltersValue.EMPTY), copy.history)
-    assertEquals(6, value.filterCount)
+    assertEquals(7, value.filterCount)
   }
 
   @Test
   fun `search field text`() {
-    assertEquals("\"avatar\" author:\"intellij-dev\" label:\"bug\" ",
-                 GiteaFiltersPanelFactory.shortText(GiteaPullRequestsFiltersValue("avatar", author = UserFilterValue("intellij-dev", null), label = "bug")))
+    assertEquals("\"avatar\" author:\"intellij-dev\" label:\"bug\" draft:\"Hide drafts\" ",
+                 GiteaFiltersPanelFactory.shortText(GiteaPullRequestsFiltersValue("avatar", author = UserFilterValue("intellij-dev", null), label = "bug",
+                                                                                   draft = DraftFilter.HIDE)))
   }
 
   @Test
