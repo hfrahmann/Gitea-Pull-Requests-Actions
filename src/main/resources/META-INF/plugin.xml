@@ -1,4 +1,8 @@
-<idea-plugin>
+<!--
+  require-restart: unloading fails as soon as pull request tabs were open (the platform keeps references to them, e.g.
+  for "Reopen Closed Tab" and in the editor tab toolbar), so the IDE asks for a restart right away instead of trying.
+-->
+<idea-plugin require-restart="true">
   <id>de.hendrikfrahmann.giteaplugin</id>
   <name>Gitea Pull Requests &amp; Actions</name>
   <vendor url="https://github.com/hfrahmann/Gitea-Pull-Requests-Actions">Hendrik Frahmann</vendor>
