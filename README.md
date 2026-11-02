@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://github.com/hfrahmann/Gitea-Pull-Requests-Actions/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/hfrahmann/Gitea-Pull-Requests-Actions/actions/workflows/build.yml" />
+  <img src="https://github.com/hfrahmann/Gitea-Pull-Requests-Actions/actions/workflows/build.yml/badge.svg?branch=main&event=schedule" />
   <img src="https://img.shields.io/github/v/release/hfrahmann/Gitea-Pull-Requests-Actions" />
   <img src="https://img.shields.io/github/license/hfrahmann/Gitea-Pull-Requests-Actions" />
   <br /><br />
