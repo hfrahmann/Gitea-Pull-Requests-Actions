@@ -33,13 +33,8 @@ class GiteaFiltersPanelFactory(vm: GiteaPullRequestsFiltersViewModel)
   override fun getShortText(searchValue: GiteaPullRequestsFiltersValue): @Nls String = shortText(searchValue)
 
   override fun createFilters(viewScope: CoroutineScope): List<JComponent> = listOf(
-    DropDownComponentFactory(vm.stateFilterState).create(
-      viewScope,
-      filterName = GiteaBundle.message("pull.request.list.filter.state"),
-      items = listOf(GiteaPullRequestState.OPEN, GiteaPullRequestState.MERGED, GiteaPullRequestState.CLOSED),
-      onSelect = {},
-      valuePresenter = ::stateText,
-    ),
+    fixedValuesFilter(viewScope, vm.stateFilterState, GiteaBundle.message("pull.request.list.filter.state"),
+                      listOf(GiteaPullRequestState.OPEN, GiteaPullRequestState.MERGED, GiteaPullRequestState.CLOSED), ::stateText),
     userFilter(viewScope, vm.authorFilterState, GiteaBundle.message("pull.request.list.filter.author"), vm.users),
     DropDownComponentFactory(vm.labelFilterState).create(
       viewScope,
@@ -65,13 +60,7 @@ class GiteaFiltersPanelFactory(vm: GiteaPullRequestsFiltersViewModel)
         }, popupConfig(vm))?.title
       },
     ),
-    DropDownComponentFactory(vm.draftFilterState).create(
-      viewScope,
-      filterName = GiteaBundle.message("pull.request.list.filter.draft"),
-      items = DraftFilter.entries,
-      onSelect = {},
-      valuePresenter = ::draftText,
-    ),
+    fixedValuesFilter(viewScope, vm.draftFilterState, GiteaBundle.message("pull.request.list.filter.draft"), DraftFilter.entries, ::draftText),
   )
 
   override fun GiteaPullRequestsQuickFilter.getQuickFilterTitle(): @Nls String = when (this) {
@@ -81,6 +70,22 @@ class GiteaFiltersPanelFactory(vm: GiteaPullRequestsFiltersViewModel)
     is GiteaPullRequestsQuickFilter.ReviewRequested -> GiteaBundle.message("pull.request.list.filter.quick.review.requested")
     is GiteaPullRequestsQuickFilter.Closed -> GiteaBundle.message("pull.request.list.filter.quick.closed")
   }
+
+  /** A few fixed values: no search field unless the user starts typing. */
+  private fun <T : Any> fixedValuesFilter(
+    viewScope: CoroutineScope,
+    state: MutableStateFlow<T?>,
+    filterName: @Nls String,
+    items: List<T>,
+    presenter: (T) -> @Nls String,
+  ): JComponent = DropDownComponentFactory(state).create(
+    viewScope,
+    filterName,
+    valuePresenter = presenter,
+    chooseValue = { point ->
+      ChooserPopupUtil.showChooserPopup(point, items, { PopupItemPresentation.Simple(presenter(it)) }, PopupConfig(alwaysShowSearchField = false))
+    },
+  )
 
   private fun userFilter(
     viewScope: CoroutineScope,
