@@ -165,15 +165,30 @@ private class SubmitReviewPopup(vm: GiteaPullRequestDiffViewModel) {
   }
 
   private fun submit(event: GiteaReviewEvent) {
-    // the API refuses "request changes" without text, even with inline comments (the web UI doesn't)
-    if (event == GiteaReviewEvent.REQUEST_CHANGES && textArea.text.isBlank()) {
+    val missingText = missingTextMessage(event)
+    if (missingText != null) {
       val validator = ComponentValidator.getInstance(textArea).orElseGet { ComponentValidator(popup).installOn(textArea) }
-      validator.updateInfo(ValidationInfo(GiteaBundle.message("review.submit.request.changes.text.required"), textArea))
+      validator.updateInfo(ValidationInfo(missingText, textArea))
       textArea.requestFocusInWindow()
       return
     }
     popup.closeOk(null)
     cs.launch { notifyOnError { reviewData.submitReview(event, textArea.text, pullRequest?.head?.sha) } }
+  }
+
+  /**
+   * What Gitea refuses without a text: "request changes" always (the API, even with inline comments; the web UI doesn't),
+   * "comment" without inline comments. "Approve" needs neither.
+   */
+  private fun missingTextMessage(event: GiteaReviewEvent): @Nls String? {
+    if (textArea.text.isNotBlank()) {
+      return null
+    }
+    return when (event) {
+      GiteaReviewEvent.REQUEST_CHANGES -> GiteaBundle.message("review.submit.request.changes.text.required")
+      GiteaReviewEvent.COMMENT -> GiteaBundle.message("review.submit.comment.text.required").takeIf { pendingCommentCount(state) == 0 }
+      else -> null
+    }
   }
 
   private fun discard() {
