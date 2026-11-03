@@ -4,7 +4,10 @@
 #   Gitea:  required – token of a real account with write access (a bot user; scopes write:repository, read:user,
 #           write:issue). The workflow token can't be used: its user "gitea-actions" is a pseudo-user, and Renovate's
 #           PR lookup (`poster=<bot>`) fails with "user does not exist". Without the secret the job is skipped.
-#   GitHub: optional – falls back to the workflow token (PRs created with it don't start CI runs).
+#   GitHub: recommended – a fine-grained token (contents, pull requests, issues, workflows: read/write). The workflow
+#           token is the fallback, but it can only open PRs with "Allow GitHub Actions to create and approve pull
+#           requests" (Settings → Actions → General), can't change workflow files (no action updates) and its PRs
+#           don't start CI runs.
 # Optional on Gitea: RENOVATE_GITHUB_COM_TOKEN (read-only github.com token) for release notes and fewer rate limits.
 name: Renovate
 
@@ -35,6 +38,8 @@ jobs:
           RENOVATE_REPOSITORIES: ${{ github.repository }}
           RENOVATE_ONBOARDING: "false"
           RENOVATE_REQUIRE_CONFIG: required
+          # Gradle updates regenerate the wrapper (gradlew, wrapper jar) with ./gradlew – our own repository only
+          RENOVATE_ALLOWED_UNSAFE_EXECUTIONS: gradleWrapper
           # commits need an author with e-mail (bot users often have none); the repository variable overrides it
           RENOVATE_GIT_AUTHOR: ${{ vars.RENOVATE_GIT_AUTHOR || 'Renovate Bot <bot@renovateapp.com>' }}
           SERVER_URL: ${{ github.server_url }}

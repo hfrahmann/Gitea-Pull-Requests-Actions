@@ -4,9 +4,10 @@
 // Gitea reads .github/ when there is no .gitea/ – keep everything here and never add a .gitea/ folder.
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-  extends: ['config:recommended', ':dependencyDashboard', 'helpers:pinGitHubActionDigestsToSemver'],
+  extends: ['config:recommended', 'helpers:pinGitHubActionDigestsToSemver'],
   labels: ['dependencies'],
-  dependencyDashboardApproval: false,
+  // no dashboard issue (config:recommended turns it on); Renovate closes an existing one
+  dependencyDashboard: false,
   // PR description: only the update table and the footer (no notes, configuration or rebase checkbox)
   prBodyTemplate: '{{{header}}}{{{table}}}{{{footer}}}',
   customManagers: [
