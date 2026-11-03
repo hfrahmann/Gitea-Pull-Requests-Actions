@@ -29,6 +29,11 @@
       allowedVersions: '/^2026\\.1\\./',
     },
     {
+      // the JDK of setup-java in the workflows: Java 21 like jvmToolchain(21) and the runtime of sinceBuild 261
+      matchDepNames: ['java-jdk'],
+      allowedVersions: '21',
+    },
+    {
       // the Kotlin compiler may move on; the apiVersion in build.gradle.kts stays tied to sinceBuild
       matchPackageNames: ['org.jetbrains.kotlin.jvm', 'org.jetbrains.kotlin:**'],
       groupName: 'Kotlin',
