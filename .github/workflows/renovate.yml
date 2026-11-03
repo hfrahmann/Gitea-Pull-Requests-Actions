@@ -40,8 +40,8 @@ jobs:
           RENOVATE_REQUIRE_CONFIG: required
           # Gradle updates regenerate the wrapper (gradlew, wrapper jar) with ./gradlew – our own repository only
           RENOVATE_ALLOWED_UNSAFE_EXECUTIONS: gradleWrapper
-          # commits need an author with e-mail (bot users often have none); the repository variable overrides it
-          RENOVATE_GIT_AUTHOR: ${{ vars.RENOVATE_GIT_AUTHOR || 'Renovate Bot <bot@renovateapp.com>' }}
+          # optional commit author (repository variable), see below
+          GIT_AUTHOR_VAR: ${{ vars.RENOVATE_GIT_AUTHOR }}
           SERVER_URL: ${{ github.server_url }}
           GITHUB_COM_TOKEN_SECRET: ${{ secrets.RENOVATE_GITHUB_COM_TOKEN }}
           LOG_LEVEL: info
@@ -53,6 +53,8 @@ jobs:
             fi
             export RENOVATE_TOKEN="$RENOVATE_TOKEN_SECRET"
             export RENOVATE_PLATFORM=gitea
+            # commits need an author with e-mail (bot users often have none)
+            export RENOVATE_GIT_AUTHOR="${GIT_AUTHOR_VAR:-Renovate Bot <bot@renovateapp.com>}"
             export RENOVATE_ENDPOINT="$SERVER_URL/api/v1"
             # clone from the address the runner reaches Gitea at, not the repository's clone_url (ROOT_URL, may be a proxy path)
             export RENOVATE_GIT_URL=endpoint
@@ -61,6 +63,9 @@ jobs:
           else
             export RENOVATE_TOKEN="${RENOVATE_TOKEN_SECRET:-$WORKFLOW_TOKEN}"
             export RENOVATE_PLATFORM=github
+            # Renovate takes the token's account as author; another one marks its own branches as edited (no PRs), as
+            # the workflow token's commits are made through the API by github-actions[bot]
+            if [ -n "$GIT_AUTHOR_VAR" ]; then export RENOVATE_GIT_AUTHOR="$GIT_AUTHOR_VAR"; fi
           fi
           echo "Renovate on $RENOVATE_PLATFORM (${RENOVATE_ENDPOINT:-github.com})"
           renovate
