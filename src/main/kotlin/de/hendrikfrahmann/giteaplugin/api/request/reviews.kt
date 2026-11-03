@@ -22,12 +22,6 @@ import de.hendrikfrahmann.giteaplugin.api.sendIgnoringBody
 suspend fun GiteaApi.loadReviewComments(repository: GiteaRepositoryPath, number: Long, reviewId: Long): List<GiteaReviewCommentDTO> =
   getJsonList<GiteaReviewCommentDTO>(server.repoApiUri(repository, "pulls", number.toString(), "reviews", reviewId.toString(), "comments")).body
 
-/**
- * Body for a REQUEST_CHANGES review without text: the API refuses a blank body for that event even with inline comments
- * (the web UI doesn't), a zero-width space isn't whitespace to Go's `strings.TrimSpace`. Shown as no text.
- */
-const val GITEA_EMPTY_REVIEW_BODY: String = "​"
-
 /** Review event / state names of the API. */
 enum class GiteaReviewEvent { APPROVED, REQUEST_CHANGES, COMMENT, PENDING }
 

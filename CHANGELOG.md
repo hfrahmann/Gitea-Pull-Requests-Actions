@@ -14,8 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Review: "Request changes" with inline comments but no review text failed with "review event REQUEST_CHANGES requires
-  a body". Like in the Gitea web UI, the inline comments are now enough.
+- Review: "Request changes" without review text failed with "review event REQUEST_CHANGES requires a body", also with
+  inline comments (unlike the Gitea web UI, the API needs a text). The submit popup now asks for the text instead.
 
 ## [1.0.1] - 2026-11-01
 
