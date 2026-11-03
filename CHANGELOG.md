@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Review: "Request changes" with inline comments but no review text failed with "review event REQUEST_CHANGES requires
+  a body". Like in the Gitea web UI, the inline comments are now enough.
+
 ## [1.0.2] - 2026-11-02
 
 ### Added

@@ -6,6 +6,7 @@ import de.hendrikfrahmann.giteaplugin.api.GiteaApi
 import de.hendrikfrahmann.giteaplugin.api.GiteaRepositoryPath
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaReviewDTO
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaUserDTO
+import de.hendrikfrahmann.giteaplugin.api.request.GITEA_EMPTY_REVIEW_BODY
 import de.hendrikfrahmann.giteaplugin.api.request.GiteaCreateReviewRequest
 import de.hendrikfrahmann.giteaplugin.api.request.GiteaNewReviewComment
 import de.hendrikfrahmann.giteaplugin.api.request.GiteaReviewEvent
@@ -134,9 +135,13 @@ class GiteaPullRequestReviewData(
    * so that one is submitted with them); without drafts the server pending review is submitted, or – without one – a
    * review with just a body is created (e.g. a plain approval). The drafts are kept if the request fails.
    */
-  suspend fun submitReview(event: GiteaReviewEvent, body: String, headSha: String?) = change {
+  suspend fun submitReview(event: GiteaReviewEvent, text: String, headSha: String?) = change {
     val submitted = mutex.withLock { drafts }
-    val pending = serverState?.getOrNull()?.pendingReview
+    val server = serverState?.getOrNull()
+    val pending = server?.pendingReview
+    val hasComments = submitted.isNotEmpty() || (pending != null && server.threads.any { it.reviewId == pending.id })
+    // like the web UI: inline comments are enough for "request changes"
+    val body = if (event == GiteaReviewEvent.REQUEST_CHANGES && text.isBlank() && hasComments) GITEA_EMPTY_REVIEW_BODY else text
     when {
       submitted.isNotEmpty() -> {
         // positions count in the version they were made on; drafts of an older head go with the newest one's commit

@@ -5,6 +5,7 @@ import de.hendrikfrahmann.giteaplugin.api.dto.GiteaLabelDTO
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaReviewDTO
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaTimelineEventDTO
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaUserDTO
+import de.hendrikfrahmann.giteaplugin.api.request.GITEA_EMPTY_REVIEW_BODY
 import de.hendrikfrahmann.giteaplugin.api.request.GiteaPushData
 import java.util.Date
 
@@ -121,7 +122,8 @@ sealed interface GiteaTimelineItem {
           // Gitea lists a review once per submission; its threads are shown at the first entry only
           val isFirstEntry = reviewsShown.add(event.reviewId)
           val reviewThreads = threadsByReview[event.reviewId].orEmpty().takeIf { isFirstEntry }.orEmpty()
-          Review(event.id, event.user ?: review?.user, event.createdAt, event.reviewId, review?.state, event.body.orEmpty(), reviewThreads,
+          val body = event.body.orEmpty().takeIf { it != GITEA_EMPTY_REVIEW_BODY }.orEmpty()
+          Review(event.id, event.user ?: review?.user, event.createdAt, event.reviewId, review?.state, body, reviewThreads,
                  review?.dismissed == true)
         }
         "pull_push" -> {
