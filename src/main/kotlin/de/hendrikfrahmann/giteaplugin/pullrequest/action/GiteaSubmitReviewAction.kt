@@ -9,12 +9,15 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.components.serviceIfCreated
 import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.openapi.ui.ComponentValidator
+import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.ui.popup.IconButton
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.text.HtmlBuilder
 import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.ui.ColorUtil
+import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.InplaceButton
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.ui.components.JBLabel
@@ -41,6 +44,7 @@ import java.awt.event.MouseEvent
 import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JPanel
+import javax.swing.event.DocumentEvent
 
 /**
  * `Gitea.PullRequest.Review.Submit` in the review diff toolbar: submits the pending review (or a review with just a body)
@@ -92,6 +96,11 @@ private class SubmitReviewPopup(vm: GiteaPullRequestDiffViewModel) {
     lineWrap = true
     wrapStyleWord = true
     emptyText.text = GiteaBundle.message("review.submit.placeholder")
+    document.addDocumentListener(object : DocumentAdapter() {
+      override fun textChanged(e: DocumentEvent) {
+        ComponentValidator.getInstance(this@apply).ifPresent { it.updateInfo(null) }
+      }
+    })
   }
   private lateinit var popup: JBPopup
 
@@ -156,8 +165,30 @@ private class SubmitReviewPopup(vm: GiteaPullRequestDiffViewModel) {
   }
 
   private fun submit(event: GiteaReviewEvent) {
+    val missingText = missingTextMessage(event)
+    if (missingText != null) {
+      val validator = ComponentValidator.getInstance(textArea).orElseGet { ComponentValidator(popup).installOn(textArea) }
+      validator.updateInfo(ValidationInfo(missingText, textArea))
+      textArea.requestFocusInWindow()
+      return
+    }
     popup.closeOk(null)
     cs.launch { notifyOnError { reviewData.submitReview(event, textArea.text, pullRequest?.head?.sha) } }
+  }
+
+  /**
+   * What Gitea refuses without a text: "request changes" always (the API, even with inline comments; the web UI doesn't),
+   * "comment" without inline comments. "Approve" needs neither.
+   */
+  private fun missingTextMessage(event: GiteaReviewEvent): @Nls String? {
+    if (textArea.text.isNotBlank()) {
+      return null
+    }
+    return when (event) {
+      GiteaReviewEvent.REQUEST_CHANGES -> GiteaBundle.message("review.submit.request.changes.text.required")
+      GiteaReviewEvent.COMMENT -> GiteaBundle.message("review.submit.comment.text.required").takeIf { pendingCommentCount(state) == 0 }
+      else -> null
+    }
   }
 
   private fun discard() {
