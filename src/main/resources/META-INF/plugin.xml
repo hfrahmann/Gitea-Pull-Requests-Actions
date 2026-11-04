@@ -144,6 +144,8 @@
             use-shortcut-of="Refresh" icon="AllIcons.Actions.Refresh"/>
     <action id="Gitea.PullRequest.Changes.Show.Diff" class="de.hendrikfrahmann.giteaplugin.pullrequest.action.GiteaShowPullRequestDiffAction"
             use-shortcut-of="Diff.ShowDiff" icon="AllIcons.Actions.Diff"/>
+    <action id="Gitea.PullRequest.Changes.Open.In.Browser" class="de.hendrikfrahmann.giteaplugin.pullrequest.action.GiteaOpenPullRequestFileInBrowserAction"
+            icon="AllIcons.General.Web"/>
     <action id="Gitea.PullRequest.Changes.Mark.Viewed" class="de.hendrikfrahmann.giteaplugin.pullrequest.action.GiteaMarkViewedAction"/>
     <action id="Gitea.PullRequest.Changes.Mark.Not.Viewed" class="de.hendrikfrahmann.giteaplugin.pullrequest.action.GiteaMarkNotViewedAction"/>
     <action id="Gitea.PullRequest.Review.Submit" class="de.hendrikfrahmann.giteaplugin.pullrequest.action.GiteaSubmitReviewAction"
@@ -192,6 +194,7 @@
     </group>
     <group id="Gitea.PullRequest.Changes.Popup">
       <reference ref="Gitea.PullRequest.Changes.Show.Diff"/>
+      <reference ref="Gitea.PullRequest.Changes.Open.In.Browser"/>
       <separator/>
       <reference ref="Gitea.PullRequest.Changes.Mark.Viewed"/>
       <reference ref="Gitea.PullRequest.Changes.Mark.Not.Viewed"/>

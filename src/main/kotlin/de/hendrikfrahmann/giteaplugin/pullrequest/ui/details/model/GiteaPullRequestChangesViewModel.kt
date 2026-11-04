@@ -20,6 +20,7 @@ import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestChanges
 import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestDataProvider
 import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestViewedState
 import de.hendrikfrahmann.giteaplugin.repository.GiteaProjectConnection
+import de.hendrikfrahmann.giteaplugin.ui.action.GiteaWebUrls
 import de.hendrikfrahmann.giteaplugin.util.childScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -41,6 +42,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.net.URI
 import java.time.OffsetDateTime
 import java.util.Date
 
@@ -84,9 +86,10 @@ class GiteaPullRequestChangesViewModel(
   }) { container, changeList ->
     val parsed = (container as ChangesContainer).changes
     // a PR with one commit: that commit's list is the whole PR, so it keeps the viewed state
+    val commitSha = changeList.commitSha
     when {
-      changeList.commitSha == null || parsed.commits.size == 1 -> CumulativeChangeListViewModel(this, parsed, changeList)
-      else -> CommitChangeListViewModel(this, changeList)
+      commitSha == null || parsed.commits.size == 1 -> CumulativeChangeListViewModel(this, parsed, changeList)
+      else -> CommitChangeListViewModel(this, changeList, commitSha)
     }
   }
 
@@ -175,13 +178,24 @@ class GiteaPullRequestChangesViewModel(
     }
 
     override fun showDiff() = showDiffPreview()
+
+    /** The file in this list's diff on Gitea. */
+    abstract fun fileWebUri(change: RefComparisonChange): URI
+
+    protected fun relativePath(change: RefComparisonChange): String =
+      VcsFileUtil.relativePath(connection.repo.gitRepository.root, change.filePath)
+
+    protected val repositoryWebUri: URI get() = connection.repo.repository.getWebURI()
   }
 
   /** Changes of a single commit: no viewed state (it belongs to the PR's cumulative diff). */
-  private inner class CommitChangeListViewModel(scope: CoroutineScope, changeList: CodeReviewChangeList)
+  private inner class CommitChangeListViewModel(scope: CoroutineScope, changeList: CodeReviewChangeList, private val commitSha: String)
     : GiteaPullRequestChangeListViewModel(scope, changeList) {
     override val detailsByChange: StateFlow<Map<RefComparisonChange, CodeReviewChangeDetails>> =
       MutableStateFlow(changes.associateWith { CodeReviewChangeDetails(true, 0) })
+
+    override fun fileWebUri(change: RefComparisonChange): URI =
+      GiteaWebUrls.pullRequestCommitFile(repositoryWebUri, dataProvider.number, commitSha, relativePath(change))
   }
 
   /** The whole PR: files can be marked viewed; a new commit to a file makes it unviewed again. */
@@ -206,8 +220,8 @@ class GiteaPullRequestChangesViewModel(
     private fun isViewed(change: RefComparisonChange): Boolean =
       latestSha(change)?.let { viewedState.isViewed(key, relativePath(change), it) } == true
 
-    private fun relativePath(change: RefComparisonChange): String =
-      VcsFileUtil.relativePath(connection.repo.gitRepository.root, change.filePath)
+    override fun fileWebUri(change: RefComparisonChange): URI =
+      GiteaWebUrls.pullRequestFile(repositoryWebUri, dataProvider.number, relativePath(change))
 
     private fun latestSha(change: RefComparisonChange): String? {
       val path = relativePath(change)

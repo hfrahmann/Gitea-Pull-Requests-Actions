@@ -2,6 +2,8 @@ package de.hendrikfrahmann.giteaplugin.ui.action
 
 import java.net.URI
 import java.net.URLEncoder
+import java.security.MessageDigest
+import java.util.HexFormat
 
 /**
  * Gitea web links below a repository's web URI ([de.hendrikfrahmann.giteaplugin.repository.GiteaRepositoryCoordinates.getWebURI],
@@ -23,6 +25,14 @@ object GiteaWebUrls {
   /** `<repo>/pulls/<number>` */
   fun pullRequest(repository: URI, number: Long): URI = repository.child("pulls", number.toString())
 
+  /** `<repo>/pulls/<number>/files#diff-<hash>` – the file in the PR's diff. */
+  fun pullRequestFile(repository: URI, number: Long, relativePath: String): URI =
+    URI.create(repository.child("pulls", number.toString(), "files").toString() + "#" + diffAnchor(relativePath))
+
+  /** `<repo>/pulls/<number>/commits/<sha>#diff-<hash>` – the file in the diff of one commit of the PR. */
+  fun pullRequestCommitFile(repository: URI, number: Long, sha: String, relativePath: String): URI =
+    URI.create(repository.child("pulls", number.toString(), "commits", sha).toString() + "#" + diffAnchor(relativePath))
+
   fun issue(repository: URI, number: Long): URI = repository.child("issues", number.toString())
 
   /** `<repo>/actions/runs/<id>` – the run id as used by the API; on 28.1 the API's `html_url` has the same form. */
@@ -33,6 +43,12 @@ object GiteaWebUrls {
 
   /** `<repo>/actions?workflow=<file>` – the runs of one workflow. */
   fun actionsWorkflow(repository: URI, workflowFile: String): URI = URI.create(repository.child("actions").toString() + "?workflow=" + encode(workflowFile))
+
+  /** Gitea's anchor of a file in a diff: the SHA-1 of its path, which is the new path for a renamed file. */
+  private fun diffAnchor(relativePath: String): String {
+    val hash = MessageDigest.getInstance("SHA-1").digest(relativePath.toByteArray())
+    return "diff-" + HexFormat.of().formatHex(hash)
+  }
 
   private fun URI.child(vararg segments: String): URI {
     val base = toString().removeSuffix("/")
