@@ -6,11 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.2] - 2026-11-02
+## [1.0.2] - 2026-11-04
 
 ### Added
 
 - Pull request list: a "Draft" filter hides draft (WIP) pull requests or shows only them.
+- Pull request files: "Open in Browser" in the context menu opens the selected file in the diff on Gitea, of the pull
+  request or the selected commit.
 
 ### Fixed
 

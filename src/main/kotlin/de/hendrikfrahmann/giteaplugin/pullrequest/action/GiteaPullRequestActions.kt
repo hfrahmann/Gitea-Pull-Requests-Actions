@@ -17,6 +17,7 @@ import de.hendrikfrahmann.giteaplugin.authentication.GiteaLoginMethod
 import de.hendrikfrahmann.giteaplugin.authentication.ui.GiteaAnonymousLoginLink
 import de.hendrikfrahmann.giteaplugin.pullrequest.data.GiteaPullRequestState
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.details.GiteaPullRequestDetailsComponentFactory
+import de.hendrikfrahmann.giteaplugin.pullrequest.ui.details.model.GiteaPullRequestChangesViewModel.GiteaPullRequestChangeListViewModel
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.details.model.GiteaPullRequestDetailsViewModel
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.toolwindow.GiteaToolWindowProjectViewModel
 import de.hendrikfrahmann.giteaplugin.settings.GiteaSettings
@@ -163,6 +164,22 @@ class GiteaShowPullRequestDiffAction : DumbAwareAction() {
 
   override fun actionPerformed(e: AnActionEvent) {
     e.getData(CodeReviewChangeListViewModel.DATA_KEY)?.showDiffPreview()
+  }
+}
+
+/** `Gitea.PullRequest.Changes.Open.In.Browser` – the selected file in the diff on Gitea, of the PR or the selected commit. */
+class GiteaOpenPullRequestFileInBrowserAction : DumbAwareAction() {
+  override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+
+  override fun update(e: AnActionEvent) {
+    e.presentation.isEnabledAndVisible = e.getData(CodeReviewChangeListViewModel.DATA_KEY) is GiteaPullRequestChangeListViewModel &&
+                                         e.getData(CodeReviewChangeListComponentFactory.SELECTED_CHANGES)?.size == 1
+  }
+
+  override fun actionPerformed(e: AnActionEvent) {
+    val vm = e.getData(CodeReviewChangeListViewModel.DATA_KEY) as? GiteaPullRequestChangeListViewModel ?: return
+    val change = e.getData(CodeReviewChangeListComponentFactory.SELECTED_CHANGES)?.singleOrNull() ?: return
+    BrowserUtil.browse(vm.fileWebUri(change))
   }
 }
 

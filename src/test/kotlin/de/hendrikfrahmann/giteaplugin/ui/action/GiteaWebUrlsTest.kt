@@ -35,6 +35,15 @@ class GiteaWebUrlsTest {
   }
 
   @Test
+  fun `file in the diff of a pull request and of one of its commits`() {
+    val anchor = "#diff-8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d"
+    assertEquals("http://127.0.0.1:3000/intellij-dev/plugin-playground/pulls/1/files$anchor",
+                 GiteaWebUrls.pullRequestFile(repo, 1, "README.md").toString())
+    assertEquals("http://127.0.0.1:3000/intellij-dev/plugin-playground/pulls/1/commits/$sha$anchor",
+                 GiteaWebUrls.pullRequestCommitFile(repo, 1, sha, "README.md").toString())
+  }
+
+  @Test
   fun `subpath server`() {
     assertEquals("https://git.example.com/gitea/intellij-dev/plugin-playground/commit/$sha", GiteaWebUrls.commit(subpathRepo, sha).toString())
     assertEquals("https://git.example.com/gitea/intellij-dev/plugin-playground/src/commit/$sha/a/b.txt#L2-L3",
