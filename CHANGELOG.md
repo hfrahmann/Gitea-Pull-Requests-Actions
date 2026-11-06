@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.3] - 2026-11-06
 
+### Added
+
+- Errors: exceptions and freezes caused by the plugin can be reported to the developer through JetBrains Marketplace, from
+  the IDE's "Internal Errors" dialog.
+
 ### Fixed
 
 - IntelliJ IDEA 2026.3: the plugin failed with "NoClassDefFoundError: com/fasterxml/jackson/databind/json/JsonMapper" at
