@@ -16,6 +16,7 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /** OAuth flow against a fake Gitea; the "browser" follows the redirect to our loopback listener. */
@@ -109,6 +110,11 @@ class GiteaOAuthServiceTest : BasePlatformTestCase() {
     val service = service(fakeBrowser(page) { q -> "error=access_denied&error_description=user+said+no&state=${q["state"]}" })
     val error = expectThrows<GiteaOAuthException> { runBlocking { service.authorize(server, "c", timeout = 10.seconds) } }
     assertTrue(error.message!!.contains("user said no"))
+  }
+
+  fun `test no redirect in time is an error, not a cancellation`() {
+    val error = expectThrows<GiteaOAuthException> { runBlocking { service {}.authorize(server, "c", timeout = 100.milliseconds) } }
+    assertTrue(error.message!!.contains("in time"))
   }
 
   fun `test failed token exchange is reported`() {

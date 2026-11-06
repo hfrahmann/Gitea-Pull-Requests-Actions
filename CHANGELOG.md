@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - IntelliJ IDEA 2026.3: the plugin failed with "NoClassDefFoundError: com/fasterxml/jackson/databind/json/JsonMapper" at
   startup and could not load accounts or pull requests.
+- Login via browser from the settings (IntelliJ IDEA 2026.2 and later): the new account disappeared when you returned
+  from the browser, so the login seemed to do nothing.
+- Login: a login that fails now always says why. Before, it ended without any message when the browser login timed out
+  or when the plugin hit an error of its own, and a refused connection only showed "ConnectException".
 
 ## [1.0.2] - 2026-11-04
 

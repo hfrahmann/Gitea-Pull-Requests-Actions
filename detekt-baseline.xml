@@ -81,7 +81,6 @@
     <ID>TooGenericExceptionCaught:GiteaCurrentBranchPullRequestService.kt:GiteaCurrentBranchPullRequestService$e: Exception</ID>
     <ID>TooGenericExceptionCaught:GiteaHttpAuthDataProvider.kt:GiteaGitAccounts$e: Exception</ID>
     <ID>TooGenericExceptionCaught:GiteaJobLogPanel.kt:GiteaJobLogPanel$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:GiteaLoginUtil.kt:GiteaLoginUtil$e: Exception</ID>
     <ID>TooGenericExceptionCaught:GiteaProjectConnectionManager.kt:GiteaProjectConnectionManager$e: Exception</ID>
     <ID>TooGenericExceptionCaught:GiteaProjectConnectionManager.kt:GiteaProjectConnectionManager$e: Throwable</ID>
     <ID>TooGenericExceptionCaught:GiteaPullRequestChangesViewModel.kt:GiteaPullRequestChangesViewModel$e: Exception</ID>

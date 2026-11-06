@@ -50,13 +50,14 @@ import kotlinx.coroutines.launch
  */
 class GiteaSettingsConfigurable(private val project: Project) : BoundConfigurable("Gitea", HELP_TOPIC) {
   private var testJob: Job? = null
+  internal val accountsModel = GiteaAccountsListModel()
 
   override fun createPanel(): DialogPanel {
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.EDT + ModalityState.any().asContextElement())
     Disposer.register(checkNotNull(disposable) { "createPanel() is called after the configurable's disposable exists" }) { scope.cancel() }
     val settings = GiteaSettings.getInstance()
     return panel {
-      accountsRows(scope, GiteaAccountsListModel())
+      accountsRows(scope, accountsModel)
       connectionGroup(settings)
       if (GiteaLoginUtil.isPasswordSafeMemoryOnly) {
         row { comment(GiteaBundle.message("settings.password.safe.memory.only")) }
@@ -65,6 +66,23 @@ class GiteaSettingsConfigurable(private val project: Project) : BoundConfigurabl
       oauthAppsGroup(settings)
     }
   }
+
+  /**
+   * Keeps accounts that were logged in but not applied yet when the Settings window gets the focus back.
+   *
+   * The non-modal Settings of newer IDEs reset a page that was unmodified when the window lost the focus and is modified when it
+   * gets it back, taking that for an outside change. A browser login is exactly that: the browser takes the focus, the account
+   * arrives meanwhile, and coming back would remove it again. Those IDEs have `NoAutomaticReset` for this, but 2026.1 doesn't,
+   * so a class implementing it wouldn't load there. Replace this with that interface once sinceBuild is 262 or later.
+   */
+  override fun reset() {
+    if (accountsModel.newCredentials.isEmpty() || !isResetOnWindowFocus()) {
+      super.reset()
+    }
+  }
+
+  private fun isResetOnWindowFocus(): Boolean =
+    StackWalker.getInstance().walk { frames -> frames.anyMatch { it.methodName == WINDOW_FOCUS_RESET_METHOD } }
 
   /** The accounts list and "Test Connection" with its result below. */
   private fun Panel.accountsRows(scope: CoroutineScope, accountsModel: GiteaAccountsListModel) {
@@ -187,6 +205,8 @@ class GiteaSettingsConfigurable(private val project: Project) : BoundConfigurabl
   }
 
   companion object {
+    /** `SettingsEditor`'s method behind the reset described at [reset]. */
+    private const val WINDOW_FOCUS_RESET_METHOD = "resetUnmodifiedOnWindowFocus"
     const val HELP_TOPIC: String = "settings.gitea"
 
     private const val SERVER_COLUMNS = 30

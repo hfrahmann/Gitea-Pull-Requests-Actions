@@ -14,7 +14,9 @@ import de.hendrikfrahmann.giteaplugin.api.request.getCurrentUser
 import de.hendrikfrahmann.giteaplugin.settings.GiteaSettings
 import de.hendrikfrahmann.giteaplugin.util.GiteaBundle
 import org.jetbrains.annotations.Nls
+import java.net.ConnectException
 import java.net.URI
+import java.net.http.HttpConnectTimeoutException
 
 object GiteaSecurityUtil {
   /**
@@ -62,6 +64,12 @@ object GiteaSecurityUtil {
     }
     catch (e: GiteaHttpStatusError) {
       throw GiteaLoginException(GiteaBundle.message("login.error.not.gitea", api.server), e)
+    }
+    catch (e: ConnectException) {
+      throw GiteaLoginException(GiteaBundle.message("login.error.connect", api.server), e)
+    }
+    catch (e: HttpConnectTimeoutException) {
+      throw GiteaLoginException(GiteaBundle.message("login.error.connect", api.server), e)
     }
     catch (e: JacksonException) {
       throw GiteaLoginException(GiteaBundle.message("login.error.not.gitea", api.server), e)

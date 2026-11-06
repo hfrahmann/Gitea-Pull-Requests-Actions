@@ -46,6 +46,11 @@ class GiteaSecurityUtilTest : BasePlatformTestCase() {
     assertEquals("intellij-dev", validate().login)
   }
 
+  fun `test refused connection names the server`() {
+    mock.close()
+    assertTrue(loginError { validate() }.contains("Cannot connect to $server"))
+  }
+
   fun `test old server is rejected`() {
     mock.enqueue(json("""{"version":"1.26.0"}"""))
     assertTrue(loginError { validate() }.contains("1.26.0"))

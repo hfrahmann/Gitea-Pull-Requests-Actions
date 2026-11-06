@@ -102,22 +102,27 @@ object GiteaLoginUtil {
   ): GiteaLoginResult {
     val model = GiteaTokenLoginPanelModel(requiredUsername, uniqueAccountPredicate).apply { this.serverUri = serverUri }
     val cs = CoroutineScope(SupervisorJob() + Dispatchers.EDT + ModalityState.any().asContextElement())
-    try {
-      val dialog = TokenLoginDialog(project, cs, parentComponent, model, title) {
-        TokenLoginInputPanelFactory(model).createIn(
-          this,
-          serverFieldDisabled = requiredUsername != null,
-          tokenNote = GiteaBundle.message("login.token.scopes.note", GiteaSecurityUtil.REQUIRED_SCOPES.joinToString(", ")),
-          errorPresenter = ErrorStatusPresenter.simple(GiteaBundle.message("login.error.title"),
-                                                       descriptionProvider = { e: Throwable -> e.localizedMessage ?: e.javaClass.simpleName }),
-        )
+    return try {
+      guardLogin({ reportLoginFailure(project, parentComponent, serverUri, it) }) {
+        val dialog = TokenLoginDialog(project, cs, parentComponent, model, title) {
+          TokenLoginInputPanelFactory(model).createIn(
+            this,
+            serverFieldDisabled = requiredUsername != null,
+            tokenNote = GiteaBundle.message("login.token.scopes.note", GiteaSecurityUtil.REQUIRED_SCOPES.joinToString(", ")),
+            errorPresenter = ErrorStatusPresenter.simple(GiteaBundle.message("login.error.title"),
+                                                         descriptionProvider = { e: Throwable -> e.localizedMessage ?: e.javaClass.simpleName }),
+          )
+        }
+        val connected = when {
+          dialog.showAndGet() -> model.loginState.value as? LoginModel.LoginState.Connected
+          else -> null
+        }
+        when (connected) {
+          null -> GiteaLoginResult.Failure
+          else -> GiteaLoginResult.Success(GiteaAccount(connected.username, model.getServerPath(), accountId ?: Account.generateId()),
+                                           GiteaAccountCredentials.Token(model.token.trim()))
+        }
       }
-      if (!dialog.showAndGet()) {
-        return GiteaLoginResult.Failure
-      }
-      val connected = model.loginState.value as? LoginModel.LoginState.Connected ?: return GiteaLoginResult.Failure
-      val account = GiteaAccount(connected.username, model.getServerPath(), accountId ?: Account.generateId())
-      return GiteaLoginResult.Success(account, GiteaAccountCredentials.Token(model.token.trim()))
     }
     finally {
       cs.cancel()
@@ -138,18 +143,10 @@ object GiteaLoginUtil {
       return GiteaLoginResult.Failure
     }
     val server = dialog.server
-    return try {
+    return guardLogin({ reportLoginFailure(project, parentComponent, server.uri, it) }) {
       runWithModalProgressBlocking(project, GiteaBundle.message("login.oauth.progress", server)) {
         authorizeInBrowser(server, dialog.clientId, requiredUsername, accountId, uniqueAccountPredicate)
       }
-    }
-    catch (_: CancellationException) {
-      GiteaLoginResult.Failure
-    }
-    catch (e: Exception) {
-      LOG.info("Gitea OAuth login to $server failed", e)
-      showLoginError(project, parentComponent, e.localizedMessage ?: e.javaClass.simpleName)
-      GiteaLoginResult.Failure
     }
   }
 
@@ -160,6 +157,14 @@ object GiteaLoginUtil {
     val credentials = GiteaOAuthService.getInstance().authorize(server, clientId)
     val user = GiteaSecurityUtil.validateAndResolveUser(server, credentials.toApiCredentials(), requiredUsername, uniqueAccountPredicate)
     return GiteaLoginResult.Success(GiteaAccount(user.login, server, accountId ?: Account.generateId()), credentials)
+  }
+
+  private fun reportLoginFailure(project: Project, parentComponent: JComponent?, server: String, failure: Throwable) {
+    when (failure) {
+      is LinkageError -> LOG.error("Gitea login to $server failed", failure)
+      else -> LOG.info("Gitea login to $server failed", failure)
+    }
+    showLoginError(project, parentComponent, loginFailureMessage(failure))
   }
 
   private fun showLoginError(project: Project, parentComponent: JComponent?, message: @Nls String) {
@@ -174,6 +179,33 @@ object GiteaLoginUtil {
 
   private fun withoutAccount(account: GiteaAccount, predicate: (GiteaServerPath, String) -> Boolean): (GiteaServerPath, String) -> Boolean =
     { server, username -> (server == account.server && username.equals(account.name, true)) || predicate(server, username) }
+}
+
+/**
+ * Runs a login so that it can't end in silence: cancelling is a plain [GiteaLoginResult.Failure], anything else goes to [onFailure]
+ * first. That includes [LinkageError]s, which `catch (e: Exception)` misses: a class missing at runtime (IDEA 2026.3 no longer
+ * exposed Jackson to the plugin) only reached the IDE log, the dialog closed or never opened and the user saw nothing.
+ */
+@Suppress("TooGenericExceptionCaught") // whatever goes wrong must reach the user
+internal inline fun guardLogin(onFailure: (Throwable) -> Unit, login: () -> GiteaLoginResult): GiteaLoginResult =
+  try {
+    login()
+  }
+  catch (_: CancellationException) {
+    GiteaLoginResult.Failure
+  }
+  catch (e: Exception) {
+    onFailure(e)
+    GiteaLoginResult.Failure
+  }
+  catch (e: LinkageError) {
+    onFailure(e)
+    GiteaLoginResult.Failure
+  }
+
+internal fun loginFailureMessage(failure: Throwable): @Nls String = when (failure) {
+  is LinkageError -> GiteaBundle.message("login.error.plugin", failure.toString())
+  else -> failure.localizedMessage ?: failure.javaClass.simpleName
 }
 
 enum class GiteaLoginMethod { OAUTH, TOKEN }
