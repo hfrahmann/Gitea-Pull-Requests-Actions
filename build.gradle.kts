@@ -33,6 +33,10 @@ kotlin {
     }
 }
 
+// The built plugin zip in a real IDE, driven from outside (see ideSmokeTest). No main output on this classpath: the test
+// reaches the plugin only through the IDE process, so a class resolves through the real plugin classloader or not at all.
+val smokeTest: SourceSet = sourceSets.create("smokeTest")
+
 repositories {
     mavenCentral()
     intellijPlatform {
@@ -53,6 +57,12 @@ dependencies {
     testImplementation(libs.mockwebserver)
     testRuntimeOnly(libs.junit.vintage)
     testRuntimeOnly(libs.junit.platform.launcher)
+    "smokeTestImplementation"(platform(libs.junit.bom))
+    "smokeTestImplementation"(libs.junit.jupiter)
+    // kotlin.stdlib.default.dependency = false is about the plugin; this classpath runs outside the IDE
+    "smokeTestImplementation"(kotlin("stdlib"))
+    "smokeTestImplementation"(providers.gradleProperty("smokeTestStarterVersion").map { "com.jetbrains.intellij.tools:ide-starter-product-idea-ultimate:$it" })
+    "smokeTestRuntimeOnly"(libs.junit.platform.launcher)
     detektPlugins(libs.detekt.ktlint)
 
     intellijPlatform {
@@ -63,6 +73,11 @@ dependencies {
         bundledModule("intellij.platform.collaborationTools")
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.JUnit5)
+        testFramework(
+            TestFrameworkType.Starter,
+            version = providers.gradleProperty("smokeTestStarterVersion"),
+            configurationName = "smokeTestImplementation",
+        )
     }
 }
 
@@ -185,8 +200,11 @@ detekt {
 // "core" variant (API client, DTOs, data/mapping) has minimums – the measured values of 2026-10-24, only ever raise them.
 kover {
     currentProject {
+        sources {
+            excludedSourceSets.add(smokeTest.name)
+        }
         instrumentation {
-            disabledForTestTasks.add("integrationTest")
+            disabledForTestTasks.addAll("integrationTest", "ideSmokeTest")
         }
         createVariant("core") {
             add("jvm")
@@ -252,6 +270,44 @@ tasks {
         useJUnitPlatform {
             // Integration tests need the test Gitea from .github/scripts/ci-gitea.sh (see README.md): ./gradlew integrationTest
             excludeTags("integration")
+        }
+    }
+
+    // The Starter jars are Java 25 bytecode (like the 263 IDE they come from), and have their own Kotlin inline functions
+    named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileSmokeTestKotlin") {
+        kotlinJavaToolchain.toolchain.use(project.javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(25) })
+        compilerOptions {
+            apiVersion = KotlinVersion.KOTLIN_2_4
+        }
+    }
+
+    named<JavaCompile>("compileSmokeTestJava") {
+        javaCompiler = project.javaToolchains.compilerFor { languageVersion = JavaLanguageVersion.of(25) }
+    }
+
+    // Not part of `check`: downloads a full IDE and starts it, see the CI jobs "IDE smoke test". ./gradlew ideSmokeTest
+    register<Test>("ideSmokeTest") {
+        description = "Installs the built plugin zip into a real IDE and loads its classes through the plugin classloader."
+        group = "verification"
+        testClassesDirs = smokeTest.output.classesDirs
+        classpath = smokeTest.runtimeClasspath
+        useJUnitPlatform()
+        javaLauncher = project.javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(25) }
+        // Starter's own file system code when it unpacks the .tar.gz of a Linux IDE
+        jvmArgs("--add-exports=java.base/sun.nio.fs=ALL-UNNAMED")
+        val pluginZip = buildPlugin.flatMap { it.archiveFile }
+        inputs.file(pluginZip)
+        systemProperty("gitea.smoke.plugin.zip", pluginZip.get().asFile.absolutePath)
+        // -PsmokeTestIdeVersion=2026.3.1 for another release, -PsmokeTestEap for the latest EAP build
+        systemProperty("gitea.smoke.ide.version", providers.gradleProperty("smokeTestIdeVersion").get())
+        systemProperty("gitea.smoke.ide.eap", providers.gradleProperty("smokeTestEap").isPresent)
+        // Checks the IDE as it is today, a passed run says nothing about tomorrow's EAP
+        outputs.upToDateWhen { false }
+        outputs.cacheIf { false }
+        testLogging {
+            events("passed", "failed", "skipped")
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+            showStandardStreams = true
         }
     }
 

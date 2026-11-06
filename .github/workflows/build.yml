@@ -140,6 +140,74 @@ jobs:
           name: plugin-verifier-reports-eap
           path: build/reports/pluginVerifier
 
+  # The built zip in a real IDE (gradle.properties: smokeTestIdeVersion), through the real plugin classloader: finds what the
+  # verifier and the unit tests can't see, like a platform module missing from plugin.xml.
+  ide-smoke:
+    name: IDE smoke test
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+
+      # The IDE opens real windows; xvfb is not on every runner image (Gitea runners)
+      - name: Install xvfb
+        run: command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
+
+      - name: Run IDE smoke test
+        run: xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew ideSmokeTest --console=plain
+
+      - name: Upload IDE logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        # artifacts are a convenience; Gitea behind a sub-path proxy may refuse v4 uploads
+        continue-on-error: true
+        with:
+          name: ide-smoke-logs
+          path: |
+            build/reports/tests/ideSmokeTest
+            out/ide-tests/tests/*/*/*/*/log
+
+  # The same in the latest EAP build. Allowed to fail – the workflow stays green, the job shows red.
+  ide-smoke-eap:
+    name: IDE smoke test (EAP)
+    needs: build
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+
+      # The IDE opens real windows; xvfb is not on every runner image (Gitea runners)
+      - name: Install xvfb
+        run: command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
+
+      - name: Run IDE smoke test
+        run: xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew ideSmokeTest -PsmokeTestEap --console=plain
+
+      - name: Upload IDE logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        # artifacts are a convenience; Gitea behind a sub-path proxy may refuse v4 uploads
+        continue-on-error: true
+        with:
+          name: ide-smoke-logs-eap
+          path: |
+            build/reports/tests/ideSmokeTest
+            out/ide-tests/tests/*/*/*/*/log
+
   # Integration tests against a fresh Gitea of the oldest supported and the latest release. Gitea runs as a
   # plain binary (.github/scripts/ci-gitea.sh), so no Docker or service containers are needed – the same on GitHub and Gitea.
   gitea-compat:
