@@ -153,7 +153,7 @@ object GiteaLoginUtil {
   private suspend fun authorizeInBrowser(server: GiteaServerPath, clientId: String, requiredUsername: String?, accountId: String?,
                                          uniqueAccountPredicate: (GiteaServerPath, String) -> Boolean): GiteaLoginResult.Success {
     // check the server before sending the user to the browser
-    GiteaSecurityUtil.checkServer(GiteaApiManager.getInstance().getUnauthenticatedClient(server))
+    GiteaSecurityUtil.checkServerWithoutCredentials(GiteaApiManager.getInstance().getUnauthenticatedClient(server))
     val credentials = GiteaOAuthService.getInstance().authorize(server, clientId)
     val user = GiteaSecurityUtil.validateAndResolveUser(server, credentials.toApiCredentials(), requiredUsername, uniqueAccountPredicate)
     return GiteaLoginResult.Success(GiteaAccount(user.login, server, accountId ?: Account.generateId()), credentials)

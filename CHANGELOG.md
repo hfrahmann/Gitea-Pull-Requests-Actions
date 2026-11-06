@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Login: a wrong token on a working Gitea server said "No Gitea API found" instead of saying that the token is invalid. The
+  "Test Connection" button and the accounts list had the same problem, and the accounts list now offers to log in again.
 - IntelliJ IDEA 2026.3: the plugin failed with "NoClassDefFoundError: com/fasterxml/jackson/databind/json/JsonMapper" at
   startup and could not load accounts or pull requests.
 - Login via browser from the settings (IntelliJ IDEA 2026.2 and later): the new account disappeared when you returned
