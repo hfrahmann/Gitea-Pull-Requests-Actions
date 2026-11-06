@@ -16,9 +16,11 @@ import de.hendrikfrahmann.giteaplugin.authentication.accounts.GiteaMissingCreden
 import de.hendrikfrahmann.giteaplugin.authentication.accounts.GiteaPersistentAccounts
 import de.hendrikfrahmann.giteaplugin.authentication.accounts.getClient
 import de.hendrikfrahmann.giteaplugin.expectThrows
+import de.hendrikfrahmann.giteaplugin.util.GiteaBundle
 import kotlinx.coroutines.runBlocking
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
+import java.net.ConnectException
 import java.net.http.HttpClient
 
 class GiteaAccountManagerTest : BasePlatformTestCase() {
@@ -90,10 +92,34 @@ class GiteaAccountManagerTest : BasePlatformTestCase() {
     runBlocking { manager.updateAccount(account, GiteaAccountCredentials.OAuth("at", "rt", "client", expiresAt = 0)) }
     mock.enqueue(json("""{"error":"invalid_grant"}""", 400))
     expectThrows<GiteaCredentialsRefreshException> { runBlocking { manager.getAndRefreshCredentials(account) } }
+    mock.enqueue(json("""{"error":"invalid_grant"}""", 401))
+    expectThrows<GiteaCredentialsRefreshException> { runBlocking { manager.getAndRefreshCredentials(account) } }
 
     expectThrows<GiteaMissingCredentialsException> {
       runBlocking { manager.getAndRefreshCredentials(GiteaAccount("nobody", server)) }
     }
+  }
+
+  fun `test a refresh the server did not reject is not reported as an expired login`() {
+    val account = GiteaAccount("intellij-dev", server)
+    fun refreshFailure(response: MockResponse): GiteaLoginException {
+      runBlocking { manager.updateAccount(account, GiteaAccountCredentials.OAuth("at", "rt", "client", expiresAt = 0)) }
+      mock.enqueue(response)
+      return expectThrows<GiteaLoginException> { runBlocking { manager.getAndRefreshCredentials(account) } }
+    }
+    val notGitea = GiteaBundle.message("login.error.not.gitea", server)
+    // The server moved: another site answers on the old address
+    assertEquals(notGitea, refreshFailure(json("", 404)).localizedMessage)
+    assertEquals(notGitea, refreshFailure(json("<!DOCTYPE html>")).localizedMessage)
+    assertEquals(GiteaBundle.message("api.error.server", 502), refreshFailure(json("", 502)).localizedMessage)
+    assertEquals("rt", (runBlocking { manager.findCredentials(account) } as GiteaAccountCredentials.OAuth).refreshToken)
+  }
+
+  fun `test an unreachable server is not reported as an expired login`() {
+    val account = GiteaAccount("intellij-dev", server)
+    runBlocking { manager.updateAccount(account, GiteaAccountCredentials.OAuth("at", "rt", "client", expiresAt = 0)) }
+    mock.close()
+    expectThrows<ConnectException> { runBlocking { manager.getAndRefreshCredentials(account) } }
   }
 
   fun `test 401 refreshes the oauth token once and retries`() {
