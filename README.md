@@ -80,6 +80,7 @@ Requires a JDK (17+ to run Gradle; the JDK 21 toolchain is downloaded automatica
 ./gradlew build          # compile + unit tests
 ./gradlew runIde         # sandbox IDE with the plugin
 ./gradlew verifyPlugin   # IntelliJ Plugin Verifier
+./gradlew ideSmokeTest   # built zip in a real IDE (2026.3; first run downloads it to out/); -PsmokeTestEap for the latest EAP
 ./gradlew buildPlugin    # zip in build/distributions
 ```
 
