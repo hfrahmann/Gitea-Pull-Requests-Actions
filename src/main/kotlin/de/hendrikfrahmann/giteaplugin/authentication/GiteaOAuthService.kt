@@ -18,7 +18,7 @@ import de.hendrikfrahmann.giteaplugin.settings.GiteaSettings
 import de.hendrikfrahmann.giteaplugin.util.GiteaBundle
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.future.asCompletableFuture
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.annotations.Nls
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -50,7 +50,7 @@ class GiteaOAuthService {
   /**
    * Opens the browser for consent and waits (cancellable, up to [timeout]) for the redirect.
    *
-   * @throws GiteaOAuthException if the user denies, `state` doesn't match or the token exchange fails
+   * @throws GiteaOAuthException if the user denies, `state` doesn't match, the redirect doesn't come in time or the token exchange fails
    */
   suspend fun authorize(
     server: GiteaServerPath,
@@ -60,7 +60,9 @@ class GiteaOAuthService {
     val pkce = Pkce(codeVerifier = randomToken(PKCE_VERIFIER_BYTES), state = randomToken())
     LoopbackListener.start().use { listener ->
       browser(authorizeUri(server, clientId, listener.redirectUri, pkce))
-      val callback = withTimeout(timeout) { listener.callback.await() }
+      // Not withTimeout: its exception is a CancellationException, which callers treat as "the user cancelled"
+      val callback = withTimeoutOrNull(timeout) { listener.callback.await() }
+                     ?: throw GiteaOAuthException(GiteaBundle.message("login.oauth.error.timeout"))
       val result = runCatching { exchangeCallback(server, clientId, listener.redirectUri, pkce, callback) }
       // the browser tab waits for this, so it can say whether the login worked
       listener.respond(result.isSuccess, result.exceptionOrNull()?.localizedMessage)

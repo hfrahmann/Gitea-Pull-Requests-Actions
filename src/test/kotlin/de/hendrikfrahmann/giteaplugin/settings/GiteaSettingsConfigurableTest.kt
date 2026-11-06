@@ -5,6 +5,8 @@ import com.intellij.openapi.options.Configurable
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import de.hendrikfrahmann.giteaplugin.api.GiteaServerPath
 import de.hendrikfrahmann.giteaplugin.authentication.GiteaOAuthService
+import de.hendrikfrahmann.giteaplugin.authentication.accounts.GiteaAccount
+import de.hendrikfrahmann.giteaplugin.authentication.accounts.GiteaAccountCredentials
 import de.hendrikfrahmann.giteaplugin.forbidSlowOperations
 
 class GiteaSettingsConfigurableTest : BasePlatformTestCase() {
@@ -29,6 +31,32 @@ class GiteaSettingsConfigurableTest : BasePlatformTestCase() {
       finally {
         configurable.disposeUIResources()
       }
+    }
+  }
+
+  fun `test window focus keeps a login that is not applied yet`() = withPendingLogin { configurable ->
+    resetUnmodifiedOnWindowFocus(configurable)
+    assertEquals(listOf("user"), configurable.accountsModel.accounts.map { it.name })
+  }
+
+  fun `test reset by the user discards a login that is not applied yet`() = withPendingLogin { configurable ->
+    configurable.reset()
+    assertEmpty(configurable.accountsModel.accounts)
+  }
+
+  /** Named like the platform method in `SettingsEditor` that calls `reset()` when the window gets the focus back. */
+  private fun resetUnmodifiedOnWindowFocus(configurable: GiteaSettingsConfigurable) = configurable.reset()
+
+  private fun withPendingLogin(test: (GiteaSettingsConfigurable) -> Unit) {
+    val configurable = GiteaSettingsConfigurable(project)
+    try {
+      configurable.createComponent()
+      val account = GiteaAccount("user", GiteaServerPath("http://192.168.1.41:3000"), "id")
+      configurable.accountsModel.add(account, GiteaAccountCredentials.Token("token"))
+      test(configurable)
+    }
+    finally {
+      configurable.disposeUIResources()
     }
   }
 
