@@ -31,6 +31,9 @@
   <resource-bundle>messages.GiteaBundle</resource-bundle>
 
   <extensions defaultExtensionNs="com.intellij">
+    <!-- exceptions and freezes attributed to this plugin can be reported; they show up on its Marketplace page -->
+    <errorHandler implementation="com.intellij.diagnostic.JetBrainsMarketplaceErrorReportSubmitter"/>
+
     <!-- inside a Gitea view the Refresh shortcut (Cmd+R) only reloads it, not also Replace / Rerun -->
     <actionPromoter implementation="de.hendrikfrahmann.giteaplugin.ui.action.GiteaRefreshActionPromoter"/>
     <!-- Settings | Version Control | Gitea (accounts, connections), next to GitHub and GitLab (same parent and weight as
