@@ -5,6 +5,7 @@ import de.hendrikfrahmann.giteaplugin.api.GiteaApiManager
 import de.hendrikfrahmann.giteaplugin.api.GiteaCredentials
 import de.hendrikfrahmann.giteaplugin.api.GiteaServerPath
 import de.hendrikfrahmann.giteaplugin.expectThrows
+import de.hendrikfrahmann.giteaplugin.util.GiteaBundle
 import kotlinx.coroutines.runBlocking
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
@@ -62,6 +63,18 @@ class GiteaSecurityUtilTest : BasePlatformTestCase() {
     assertTrue(loginError { validate() }.contains("invalid"))
   }
 
+  fun `test invalid token rejected by the version endpoint`() {
+    mock.enqueue(json("""{"message":"invalid username, password or token"}""", 401))
+    assertEquals(GiteaBundle.message("login.error.token.invalid"), loginError { validate() })
+    assertEquals(1, mock.requestCount)
+  }
+
+  fun `test 401 without credentials is not about a token`() {
+    mock.enqueue(json("""{"message":"token is required"}""", 401))
+    val api = GiteaApiManager.getInstance().getUnauthenticatedClient(server)
+    assertTrue(loginError { runBlocking { GiteaSecurityUtil.checkServerWithoutCredentials(api) } }.contains("No Gitea API"))
+  }
+
   fun `test username mismatch and duplicate account`() {
     mock.enqueue(json("""{"version":"28.1.0"}"""))
     mock.enqueue(json("""{"id":3,"login":"intellij-dev"}"""))
@@ -80,6 +93,12 @@ class GiteaSecurityUtilTest : BasePlatformTestCase() {
     assertEquals("28.1.0", outcome.version)
     assertEquals(listOf("write:repository", "write:issue", "read:organization"), outcome.missingScopes)
     assertTrue(outcome.message.contains("Missing scopes"))
+  }
+
+  fun `test connection tester reports invalid token rejected by the version endpoint`() {
+    mock.enqueue(json("""{"message":"invalid username, password or token"}""", 401))
+    val outcome = runBlocking { GiteaConnectionTester.test(GiteaApiManager.getInstance().getClient(server, GiteaCredentials.AccessToken("t"))) }
+    assertEquals(GiteaConnectionTester.Outcome.Failure(GiteaBundle.message("login.error.token.invalid")), outcome)
   }
 
   fun `test connection tester failure for unreachable server`() {

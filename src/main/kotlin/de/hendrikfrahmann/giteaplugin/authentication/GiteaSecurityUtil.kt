@@ -9,6 +9,7 @@ import de.hendrikfrahmann.giteaplugin.api.GiteaServerMetadata
 import de.hendrikfrahmann.giteaplugin.api.GiteaServerPath
 import de.hendrikfrahmann.giteaplugin.api.GiteaUnsupportedServerException
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaUserDTO
+import de.hendrikfrahmann.giteaplugin.api.isGiteaUnauthorized
 import de.hendrikfrahmann.giteaplugin.api.request.getCurrentTokenScopes
 import de.hendrikfrahmann.giteaplugin.api.request.getCurrentUser
 import de.hendrikfrahmann.giteaplugin.settings.GiteaSettings
@@ -39,8 +40,8 @@ object GiteaSecurityUtil {
     apiManager: GiteaApiManager = GiteaApiManager.getInstance(),
   ): GiteaUserDTO {
     val api = apiManager.getClient(server, credentials)
-    checkServer(api)
     val user = try {
+      checkServer(api)
       api.getCurrentUser()
     }
     catch (e: GiteaHttpStatusError) {
@@ -55,12 +56,20 @@ object GiteaSecurityUtil {
     return user
   }
 
-  /** `GET /version`; anything that isn't Gitea ≥ 28 is a [GiteaLoginException]. */
+  /**
+   * `GET /version`; anything that isn't Gitea ≥ 28 is a [GiteaLoginException].
+   *
+   * Only a `401` stays a [GiteaHttpStatusError]: Gitea rejects an invalid token on every endpoint, even on the otherwise public
+   * `/version`, so it says something about the token and not about the server. Callers report it as they report one from `/user`.
+   */
   suspend fun checkServer(api: GiteaApi): GiteaServerMetadata {
     val metadata = try {
       api.getMetadata()
     }
     catch (e: GiteaHttpStatusError) {
+      if (e.isGiteaUnauthorized) {
+        throw e
+      }
       throw GiteaLoginException(GiteaBundle.message("login.error.not.gitea", api.server), e)
     }
     catch (e: JacksonException) {
@@ -76,6 +85,15 @@ object GiteaSecurityUtil {
       throw GiteaLoginException(e.localizedMessage, e)
     }
   }
+
+  /** [checkServer] before there are credentials: without a token, a `401` can't mean that the token is wrong. */
+  suspend fun checkServerWithoutCredentials(api: GiteaApi): GiteaServerMetadata =
+    try {
+      checkServer(api)
+    }
+    catch (e: GiteaHttpStatusError) {
+      throw GiteaLoginException(GiteaBundle.message("login.error.not.gitea", api.server), e)
+    }
 
   /** Scopes of the token (`GET /token`), `null` if the server doesn't tell (e.g. for OAuth tokens). */
   suspend fun loadTokenScopes(api: GiteaApi): List<String>? =
