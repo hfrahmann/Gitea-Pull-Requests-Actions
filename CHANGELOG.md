@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   from the browser, so the login seemed to do nothing.
 - Login: a login that fails now always says why. Before, it ended without any message when the browser login timed out
   or when the plugin hit an error of its own, and a refused connection only showed "ConnectException".
+- Browser login: "The OAuth login has expired" is only shown when the server rejects the login. If the server is unreachable
+  or has moved, the actual problem is shown, without asking to log in again.
+- Settings: the login menu of an account's "Log in" link opens at the account's row instead of the middle of the list.
 
 ## [1.0.2] - 2026-11-04
 

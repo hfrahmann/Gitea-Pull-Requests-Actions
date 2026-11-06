@@ -1,5 +1,6 @@
 package de.hendrikfrahmann.giteaplugin.authentication.accounts
 
+import com.fasterxml.jackson.core.JacksonException
 import com.intellij.collaboration.auth.AccountManagerBase
 import com.intellij.collaboration.auth.AccountsRepository
 import com.intellij.collaboration.auth.CredentialsRepository
@@ -9,8 +10,12 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import de.hendrikfrahmann.giteaplugin.api.GiteaApi
 import de.hendrikfrahmann.giteaplugin.api.GiteaApiManager
+import de.hendrikfrahmann.giteaplugin.api.GiteaHttpStatusError
 import de.hendrikfrahmann.giteaplugin.api.GiteaServerPath
+import de.hendrikfrahmann.giteaplugin.api.isGiteaUnauthorized
+import de.hendrikfrahmann.giteaplugin.authentication.GiteaLoginException
 import de.hendrikfrahmann.giteaplugin.authentication.GiteaOAuthService
+import de.hendrikfrahmann.giteaplugin.util.GiteaBundle
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -35,7 +40,8 @@ class GiteaAccountManager : AccountManagerBase<GiteaAccount, GiteaAccountCredent
    * Credentials of [account]; OAuth access tokens are refreshed if they expire within a minute or if [forceRefresh].
    *
    * @throws GiteaMissingCredentialsException if there are none (or PasswordSafe failed)
-   * @throws GiteaCredentialsRefreshException if the OAuth refresh failed → the user must log in again
+   * @throws GiteaCredentialsRefreshException if the server rejected the OAuth refresh token → the user must log in again
+   * @throws Exception any other failed OAuth refresh (see [refreshFailure]): a new login wouldn't help
    */
   suspend fun getAndRefreshCredentials(account: GiteaAccount, forceRefresh: Boolean = false): GiteaAccountCredentials =
     refreshGuard.withLock {
@@ -73,14 +79,28 @@ class GiteaAccountManager : AccountManagerBase<GiteaAccount, GiteaAccountCredent
     }
     catch (e: Exception) {
       LOG.warn("Could not refresh the OAuth token for $account", e)
-      throw GiteaCredentialsRefreshException(account, e)
+      throw refreshFailure(account, e)
     }
     updateAccount(account, refreshed)
     return refreshed
   }
 
+  /**
+   * Only a rejected refresh token (Gitea answers `400`, `401` is the OAuth standard's alternative) means the login has
+   * expired. A status error from the token endpoint becomes a [GiteaLoginException], so that callers don't take it for the
+   * answer to their own request (`404` → "doesn't exist"); network errors stay as they are.
+   */
+  private fun refreshFailure(account: GiteaAccount, e: Exception): Exception = when {
+    e.isGiteaUnauthorized || (e is GiteaHttpStatusError && e.statusCode == HTTP_BAD_REQUEST) -> GiteaCredentialsRefreshException(account, e)
+    e is JacksonException || (e is GiteaHttpStatusError && e.kind == GiteaHttpStatusError.Kind.NOT_FOUND) ->
+      GiteaLoginException(GiteaBundle.message("login.error.not.gitea", account.server), e)
+    e is GiteaHttpStatusError -> GiteaLoginException(e.localizedMessage, e)
+    else -> e
+  }
+
   companion object {
     const val CREDENTIALS_SERVICE_NAME: String = "Gitea"
+    private const val HTTP_BAD_REQUEST = 400
 
     fun getInstance(): GiteaAccountManager = service()
   }
@@ -89,6 +109,7 @@ class GiteaAccountManager : AccountManagerBase<GiteaAccount, GiteaAccountCredent
 class GiteaMissingCredentialsException(val account: GiteaAccount, cause: Throwable? = null)
   : RuntimeException("No credentials for $account", cause)
 
+/** The server rejected the OAuth refresh token, so the login has expired. */
 class GiteaCredentialsRefreshException(val account: GiteaAccount, cause: Throwable? = null)
   : RuntimeException("Could not refresh the OAuth token for $account", cause)
 

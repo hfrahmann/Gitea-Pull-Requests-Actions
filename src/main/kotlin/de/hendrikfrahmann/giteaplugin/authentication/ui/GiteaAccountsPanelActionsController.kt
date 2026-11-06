@@ -45,10 +45,12 @@ class GiteaAccountsPanelActionsController(
   }
 
   private fun showPopup(parentComponent: JComponent, point: RelativePoint?, vararg actions: DumbAwareAction) {
-    JBPopupFactory.getInstance()
+    val popupFactory = JBPopupFactory.getInstance()
+    popupFactory
       .createActionGroupPopup(null, DefaultActionGroup(*actions), DataManager.getInstance().getDataContext(parentComponent),
                               JBPopupFactory.ActionSelectionAid.MNEMONICS, false)
-      .show(point ?: RelativePoint.getCenterOf(parentComponent))
+      // no point for "edit" and the "Log in" link: parentComponent is the accounts list, so this is its selected row
+      .show(point ?: popupFactory.guessBestPopupLocation(parentComponent))
   }
 
   private fun isAccountUnique(server: GiteaServerPath, username: String): Boolean =
