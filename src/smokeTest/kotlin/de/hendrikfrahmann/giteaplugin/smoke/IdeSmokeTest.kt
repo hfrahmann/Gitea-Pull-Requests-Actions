@@ -27,7 +27,7 @@ private const val PLUGIN_ID = "de.hendrikfrahmann.giteaplugin"
 private const val PLUGIN_PACKAGE = "de/hendrikfrahmann/giteaplugin/"
 
 private val LOG_ENTRY_START = Regex("""^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3} """)
-private val SEVERE_LEVEL = Regex("""\] +SEVERE - """)
+private val SEVERE_LEVEL = Regex("""] +SEVERE - """)
 
 /**
  * Behind an optional dependency on "Issue Trackers" (com.intellij.tasks), which 2026.3 no longer bundles: classes here extend
