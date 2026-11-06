@@ -142,6 +142,13 @@ intellijPlatform {
 }
 
 intellijPlatformTesting {
+    // The plugin as shipped (compiled against sinceBuild) in the newest IDE: ./gradlew runIdeLatest
+    runIde {
+        register("runIdeLatest") {
+            version = "2026.3"
+        }
+    }
+
     // Integration tests need the test Gitea from .github/scripts/ci-gitea.sh (see README.md): ./gradlew integrationTest
     testIde {
         register("integrationTest") {

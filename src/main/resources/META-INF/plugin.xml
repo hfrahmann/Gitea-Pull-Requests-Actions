@@ -12,6 +12,12 @@
 
   <depends>com.intellij.modules.platform</depends>
   <depends>Git4Idea</depends>
+  <!--
+    The plugins hosting the VCS and Tasks modules from 2026.3 on (not there before, hence optional). The IDE resolves those
+    modules through <dependencies> below, but Plugin Verifier 1.411 only finds their classes with the host plugin declared.
+  -->
+  <depends optional="true" config-file="gitea-vcs-plugin.xml">com.intellij.platform.vcs</depends>
+  <depends optional="true" config-file="gitea-tasks-plugin.xml">com.intellij.platform.tasks</depends>
   <!-- Gitea issues as tasks; everything touching com.intellij.tasks is in the tasks/ package -->
   <depends optional="true" config-file="gitea-tasks.xml">com.intellij.tasks</depends>
   <depends optional="true" config-file="gitea-yaml.xml">org.jetbrains.plugins.yaml</depends>
@@ -26,6 +32,13 @@
     <module name="intellij.platform.vcs.impl"/>
     <module name="intellij.platform.vcs.dvcs"/>
     <module name="intellij.platform.vcs.dvcs.impl"/>
+    <!--
+      Jackson 2 for GiteaJson: visible to every plugin up to 2026.2, from 2026.3 only with a declared dependency. Annotations
+      and core come along with databind: they are internal modules in 2026.3, and 2026.1 has no annotations module at all.
+    -->
+    <module name="intellij.libraries.jackson.databind"/>
+    <module name="intellij.libraries.jackson.module.kotlin"/>
+    <module name="intellij.libraries.kotlin.reflect"/>
   </dependencies>
 
   <resource-bundle>messages.GiteaBundle</resource-bundle>
