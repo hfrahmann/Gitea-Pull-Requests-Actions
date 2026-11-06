@@ -32,12 +32,7 @@
     <module name="intellij.platform.vcs.impl"/>
     <module name="intellij.platform.vcs.dvcs"/>
     <module name="intellij.platform.vcs.dvcs.impl"/>
-    <!--
-      Jackson 2 for GiteaJson: visible to every plugin up to 2026.2, from 2026.3 only with a declared dependency. Annotations
-      and core come along with databind: they are internal modules in 2026.3, and 2026.1 has no annotations module at all.
-    -->
-    <module name="intellij.libraries.jackson.databind"/>
-    <module name="intellij.libraries.jackson.module.kotlin"/>
+    <!-- For the bundled jackson-module-kotlin; a public module in every supported version. -->
     <module name="intellij.libraries.kotlin.reflect"/>
   </dependencies>
 
