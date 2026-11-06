@@ -41,6 +41,12 @@ repositories {
 }
 
 dependencies {
+    // Bundled: the platform's Jackson 2 is private in 2026.1, internal in 2026.2 and needs a declared dependency from
+    // 2026.3 on, so no module dependency works across all of them. kotlin-reflect comes from the IDE (see plugin.xml).
+    implementation(libs.jackson.module.kotlin) {
+        exclude(group = "org.jetbrains.kotlin")
+    }
+
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit4)
@@ -142,6 +148,13 @@ intellijPlatform {
 }
 
 intellijPlatformTesting {
+    // The plugin as shipped (compiled against sinceBuild) in the newest IDE: ./gradlew runIdeLatest
+    runIde {
+        register("runIdeLatest") {
+            version = "2026.3"
+        }
+    }
+
     // Integration tests need the test Gitea from .github/scripts/ci-gitea.sh (see README.md): ./gradlew integrationTest
     testIde {
         register("integrationTest") {

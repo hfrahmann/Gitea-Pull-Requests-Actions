@@ -13,7 +13,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import java.util.TimeZone
 
 /**
- * Jackson 2 mapper for the Gitea REST API (Jackson comes from the platform; 2026.1 has no Jackson 3).
+ * Jackson 2 mapper for the Gitea REST API (Jackson is bundled with the plugin, see build.gradle.kts).
  *
  * - snake_case property names, unknown properties ignored (newer servers add fields)
  * - dates as `java.util.Date`, ISO-8601 with offset (`2026-10-16T16:59:07+02:00`); 2026.1 ships no jsr310 module
