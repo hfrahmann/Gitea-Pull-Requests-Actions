@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Installing the plugin no longer needs an IDE restart. Disabling, uninstalling or updating it still does.
+
 ## [1.0.3] - 2026-11-06
 
 ### Added
