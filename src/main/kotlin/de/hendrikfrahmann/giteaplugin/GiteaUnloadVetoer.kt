@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nls
  */
 internal class GiteaUnloadVetoer : DynamicPluginVetoer {
   override fun vetoPluginUnload(pluginDescriptor: IdeaPluginDescriptor): @Nls String? =
-    if (pluginDescriptor.pluginId == PLUGIN_ID) GiteaBundle.message("plugin.unload.restart.required") else null
+    GiteaBundle.message("plugin.unload.restart.required").takeIf { pluginDescriptor.pluginId == PLUGIN_ID }
 
   internal companion object {
     val PLUGIN_ID: PluginId = PluginId.getId("de.hendrikfrahmann.giteaplugin")
