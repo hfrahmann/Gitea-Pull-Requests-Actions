@@ -17,7 +17,7 @@
     <ID>EmptyFunctionBlock:GiteaFileEditorProvider.kt:GiteaPullRequestTimelineFileEditor${}</ID>
     <ID>LoopWithTooManyJumpStatements:GiteaActionsTreeController.kt:GiteaActionsTreeController$for</ID>
     <ID>LoopWithTooManyJumpStatements:GiteaActionsTreeModel.kt:GiteaActionsTreeModel$for</ID>
-    <ID>LoopWithTooManyJumpStatements:GiteaJobLogPanel.kt:GiteaJobLogPanel$for</ID>
+    <ID>LoopWithTooManyJumpStatements:GiteaJobLogView.kt:GiteaJobLogView$for</ID>
     <ID>LoopWithTooManyJumpStatements:GiteaPagination.kt:GiteaPagination$while</ID>
     <ID>LoopWithTooManyJumpStatements:GiteaPullRequestDetailsViewModel.kt:GiteaPullRequestDetailsViewModel.Companion$for</ID>
     <ID>LoopWithTooManyJumpStatements:GiteaWorkflowCommandLine.kt:GiteaWorkflowCommandLine.Companion$for</ID>
@@ -50,7 +50,7 @@
     <ID>MaxLineLength:GiteaSecretsTest.kt:GiteaSecretsTest$mock.enqueue(MockResponse.Builder().code(200).body("""{"total_count":1,"runners":[${runner(2, "org-runner", "\"status\":\"active\",\"busy\":true,")}]}""").build())</ID>
     <ID>MaxLineLength:GiteaTimelineItemTest.kt:GiteaTimelineItemTest$path</ID>
     <ID>MixedConditionOperators:GiteaActionsActions.kt:GiteaActionsApproveAction$status == GiteaActionStatus.QUEUED &amp;&amp; node.run.isPullRequestRun</ID>
-    <ID>MixedConditionOperators:GiteaJobLogPanel.kt:GiteaJobLogPanel$section.step == null &amp;&amp; job.status.isActive</ID>
+    <ID>MixedConditionOperators:GiteaJobLogView.kt:GiteaJobLogView$section.step == null &amp;&amp; job.status.isActive</ID>
     <ID>MixedConditionOperators:GiteaRunners.kt:GiteaRunners$e.kind != GiteaHttpStatusError.Kind.FORBIDDEN &amp;&amp; e.kind != GiteaHttpStatusError.Kind.NOT_FOUND</ID>
     <ID>MixedConditionOperators:GiteaVersion.kt:GiteaVersion$suffix.startsWith("+") &amp;&amp; suffix.contains("dev", ignoreCase = true)</ID>
     <ID>MixedConditionOperators:GiteaWorkflowCommandLine.kt:GiteaWorkflowCommandLine.Companion$value.first() == '"' &amp;&amp; value.last() == '"'</ID>

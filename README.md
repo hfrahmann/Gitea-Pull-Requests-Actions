@@ -41,7 +41,7 @@ GitHub and GitLab plugins, plus **Gitea Actions** in their own tool window.
 - Runs of the current branch, of every workflow and of a pull request, with jobs, steps and live logs.
 - Re-run all, failed or single jobs, cancel runs, download artifacts and run logs.
 - Run workflows manually (`workflow_dispatch`), also from the play icons in the workflow file – on Gitea or locally
-  in Docker with `gitea-runner exec`.
+  in Docker with `gitea-runner exec`, with the local log shown by job and step like on Gitea.
 - Status bar widget, finish notifications, repository secrets and variables.
 
 **Issues**

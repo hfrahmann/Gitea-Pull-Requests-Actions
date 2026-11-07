@@ -8,9 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.4] - 2026-11-07
 
+### Added
+
+- Local workflow runs: the Run tool window shows the log like a run on Gitea – the runner's output and every job (each
+  matrix combination on its own) in a list, the selected job's log folded by step with the step's result, `::group::`
+  blocks, highlighted errors and warnings, and optional timestamps. While nothing is selected, the view follows the running
+  job, and at the end the first failed one.
+
 ### Changed
 
 - Installing the plugin no longer needs an IDE restart. Disabling, uninstalling or updating it still does.
+
+### Fixed
+
+- Local workflow runs in Docker: git refused the repository ("detected dubious ownership"), so the run had no commit, ref
+  or remote, and the log showed "not located inside a git repository".
 
 ## [1.0.3] - 2026-11-06
 
