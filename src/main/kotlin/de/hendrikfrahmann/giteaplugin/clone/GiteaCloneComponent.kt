@@ -116,9 +116,7 @@ class GiteaCloneComponent(
     })
     list.addListSelectionListener {
       val item = list.selectedValue as? GiteaCloneItem.Repository
-      if (item != null) {
-        directory.text = FileUtil.join(parentDirectory, item.repository.name)
-      }
+      GiteaCloneUrls.safeDirectoryName(item?.repository?.name)?.let { directory.text = FileUtil.join(parentDirectory, it) }
       updateOkState()
     }
     protocol.addActionListener {

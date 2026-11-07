@@ -30,6 +30,7 @@ import de.hendrikfrahmann.giteaplugin.authentication.accounts.GiteaAccount
 import de.hendrikfrahmann.giteaplugin.authentication.accounts.GiteaAccountManager
 import de.hendrikfrahmann.giteaplugin.authentication.accounts.GiteaProjectDefaultAccountHolder
 import de.hendrikfrahmann.giteaplugin.authentication.accounts.getClient
+import de.hendrikfrahmann.giteaplugin.clone.GiteaCloneUrls
 import de.hendrikfrahmann.giteaplugin.notification.GiteaNotificationIds
 import de.hendrikfrahmann.giteaplugin.repository.GiteaProjectsManager
 import de.hendrikfrahmann.giteaplugin.settings.GiteaSettings
@@ -136,10 +137,8 @@ object GiteaShareProjectUtil {
   private suspend fun perform(project: Project, root: VirtualFile, existingRepository: GitRepository?, settings: GiteaShareSettings) {
     val created = createRemoteRepository(settings)
     val webUrl = settings.account.server.webUri(created.owner?.login ?: settings.owner.login, created.name).toString()
-    val remoteUrl = when {
-      GiteaSettings.getInstance().cloneUsingSsh && !created.sshUrl.isNullOrBlank() -> created.sshUrl
-      else -> settings.account.server.httpCloneUrl(created)
-    }
+    val remoteUrl = GiteaCloneUrls.safeSshUrl(created.sshUrl)?.takeIf { GiteaSettings.getInstance().cloneUsingSsh }
+                    ?: settings.account.server.httpCloneUrl(created)
 
     val repository = withContext(Dispatchers.IO) { existingRepository ?: initRepository(project, root) }
                      ?: throw IllegalStateException(GiteaBundle.message("share.error.no.git.repository"))

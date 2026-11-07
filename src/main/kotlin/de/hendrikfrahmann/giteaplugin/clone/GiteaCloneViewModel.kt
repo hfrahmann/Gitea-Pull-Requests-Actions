@@ -25,9 +25,12 @@ sealed interface GiteaCloneItem {
   val account: GiteaAccount
 
   data class Repository(override val account: GiteaAccount, val repository: GiteaRepositoryDTO) : GiteaCloneItem {
-    /** HTTPS URL on the configured server (not Gitea's `ROOT_URL`), or the SSH URL. */
+    /**
+     * HTTPS URL on the configured server (not Gitea's `ROOT_URL`), or the SSH URL – only if it looks like one, since git
+     * would take a URL starting with `-` as an option.
+     */
     fun cloneUrl(useSsh: Boolean): String =
-      repository.sshUrl?.takeIf { useSsh && it.isNotBlank() } ?: account.server.httpCloneUrl(repository)
+      GiteaCloneUrls.safeSshUrl(repository.sshUrl)?.takeIf { useSsh } ?: account.server.httpCloneUrl(repository)
   }
 
   data class Error(override val account: GiteaAccount, val message: @Nls String) : GiteaCloneItem

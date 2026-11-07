@@ -14,6 +14,7 @@ import de.hendrikfrahmann.giteaplugin.api.GiteaServerPath
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaPRBranchInfoDTO
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaPullRequestDTO
 import de.hendrikfrahmann.giteaplugin.api.request.httpCloneUrl
+import de.hendrikfrahmann.giteaplugin.clone.GiteaCloneUrls
 import de.hendrikfrahmann.giteaplugin.pullrequest.ui.details.model.GiteaPullRequestDetailsViewModel
 import de.hendrikfrahmann.giteaplugin.util.GiteaBundle
 import git4idea.remote.hosting.HostedGitRepositoryRemote
@@ -93,7 +94,7 @@ object GiteaPullRequestMergeStatusComponentFactory {
   private fun remote(branch: GiteaPRBranchInfoDTO, server: GiteaServerPath): HostedGitRepositoryRemote? {
     val repo = branch.repo ?: return null
     val owner = repo.owner?.login ?: repo.fullName.substringBefore('/')
-    return HostedGitRepositoryRemote(owner, server.toURI(), repo.fullName, server.httpCloneUrl(repo), repo.sshUrl)
+    return HostedGitRepositoryRemote(owner, server.toURI(), repo.fullName, server.httpCloneUrl(repo), GiteaCloneUrls.safeSshUrl(repo.sshUrl))
   }
 
   /**

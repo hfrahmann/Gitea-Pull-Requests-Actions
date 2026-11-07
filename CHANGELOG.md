@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Local workflow runs in Docker: git refused the repository ("detected dubious ownership"), so the run had no commit, ref
   or remote, and the log showed "not located inside a git repository".
 
+### Security
+
+- Cloning and sharing over SSH use the server's SSH URL only if it is a plain `ssh://` or `user@host:path` URL, else
+  HTTPS, and clone into a folder named after the repository only if the name is a plain folder name. A malicious server
+  could otherwise have run commands on your machine through git options in the URL (`--upload-pack=…`).
+
 ## [1.0.3] - 2026-11-06
 
 ### Added
