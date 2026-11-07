@@ -1,8 +1,9 @@
 <!--
-  require-restart: unloading fails as soon as pull request tabs were open (the platform keeps references to them, e.g.
-  for "Reopen Closed Tab" and in the editor tab toolbar), so the IDE asks for a restart right away instead of trying.
+  Dynamic: installs without a restart. Unloading (disable, uninstall, update) is vetoed by GiteaUnloadVetoer, so the IDE
+  asks for a restart there: unloading fails as soon as pull request tabs were open (the platform keeps references to them,
+  e.g. for "Reopen Closed Tab" and in the editor tab toolbar).
 -->
-<idea-plugin require-restart="true">
+<idea-plugin>
   <id>de.hendrikfrahmann.giteaplugin</id>
   <name>Gitea Pull Requests &amp; Actions</name>
   <vendor url="https://github.com/hfrahmann/Gitea-Pull-Requests-Actions">Hendrik Frahmann</vendor>
@@ -39,6 +40,9 @@
   <resource-bundle>messages.GiteaBundle</resource-bundle>
 
   <extensions defaultExtensionNs="com.intellij">
+    <!-- installs without a restart; disabling, uninstalling or updating asks for one (see the comment at the top) -->
+    <ide.dynamicPluginVetoer implementation="de.hendrikfrahmann.giteaplugin.GiteaUnloadVetoer"/>
+
     <!-- exceptions and freezes attributed to this plugin can be reported; they show up on its Marketplace page -->
     <errorHandler implementation="com.intellij.diagnostic.JetBrainsMarketplaceErrorReportSubmitter"/>
 
