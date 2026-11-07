@@ -31,6 +31,7 @@ import de.hendrikfrahmann.giteaplugin.authentication.GiteaLoginMethod
 import de.hendrikfrahmann.giteaplugin.authentication.ui.GiteaAnonymousLoginLink
 import de.hendrikfrahmann.giteaplugin.clone.GiteaCloneItem
 import de.hendrikfrahmann.giteaplugin.clone.GiteaCloneItemRenderer
+import de.hendrikfrahmann.giteaplugin.clone.GiteaCloneUrls
 import de.hendrikfrahmann.giteaplugin.clone.GiteaCloneViewModel
 import de.hendrikfrahmann.giteaplugin.settings.GiteaSettings
 import de.hendrikfrahmann.giteaplugin.util.GiteaBundle
@@ -166,7 +167,12 @@ object GiteaRepositoriesComponentFactory {
     val initial = LocalFileSystem.getInstance().findFileByPath(remembered.cloneParentDir.ifBlank { ProjectUtil.getBaseDir() })
     val descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor().withTitle(GiteaBundle.message("clone.directory.title"))
     val parentDir = FileChooser.chooseFile(descriptor, parent, project, initial) ?: return
-    val name = item.repository.name
+    val name = GiteaCloneUrls.safeDirectoryName(item.repository.name)
+    if (name == null) {
+      Messages.showErrorDialog(parent, GiteaBundle.message("repositories.clone.invalid.name", item.repository.name),
+                               GiteaBundle.message("repositories.clone"))
+      return
+    }
     if (parentDir.findChild(name) != null) {
       Messages.showErrorDialog(parent, GiteaBundle.message("repositories.clone.exists", parentDir.path, name), GiteaBundle.message("repositories.clone"))
       return

@@ -66,6 +66,41 @@ class GiteaCloneTest : BasePlatformTestCase() {
     assertEquals("git@one.intranet:intellij-dev/plugin-playground.git", item.cloneUrl(useSsh = true))
   }
 
+  fun `test ssh url that git would read as an option falls back to https`() {
+    val dto = GiteaJson.fromJson<GiteaRepositoryDTO>(
+      """{"id":1,"name":"file:///x","full_name":"evil/x","ssh_url":"--upload-pack=touch pwned;"}""")
+    val item = GiteaCloneItem.Repository(GiteaAccount("intellij-dev", server), dto)
+    assertEquals(server.httpCloneUrl(dto), item.cloneUrl(useSsh = true))
+  }
+
+  fun `test safe ssh urls`() {
+    assertEquals("git@one.intranet:o/r.git", GiteaCloneUrls.safeSshUrl("git@one.intranet:o/r.git"))
+    assertEquals("ssh://git@one.intranet:2222/o/r.git", GiteaCloneUrls.safeSshUrl("ssh://git@one.intranet:2222/o/r.git"))
+    assertEquals("ssh://git@[::1]:2222/o/r.git", GiteaCloneUrls.safeSshUrl("ssh://git@[::1]:2222/o/r.git"))
+    assertNull(GiteaCloneUrls.safeSshUrl(null))
+    assertNull(GiteaCloneUrls.safeSshUrl(""))
+    assertNull(GiteaCloneUrls.safeSshUrl("--upload-pack=touch pwned;"))
+    assertNull(GiteaCloneUrls.safeSshUrl("--config=core.sshCommand=x"))
+    assertNull(GiteaCloneUrls.safeSshUrl("-oProxyCommand=x@host:o/r.git"))
+    assertNull(GiteaCloneUrls.safeSshUrl("git@-oProxyCommand=x:o/r.git"))
+    assertNull(GiteaCloneUrls.safeSshUrl("ssh://-oProxyCommand=x/o/r.git"))
+    assertNull(GiteaCloneUrls.safeSshUrl("git@host:-x"))
+    assertNull(GiteaCloneUrls.safeSshUrl("file:///tmp/x"))
+    assertNull(GiteaCloneUrls.safeSshUrl("ext::sh -c touch% /tmp/pwned"))
+  }
+
+  fun `test safe directory names`() {
+    assertEquals("plugin-playground", GiteaCloneUrls.safeDirectoryName("plugin-playground"))
+    assertEquals("my_repo.v2", GiteaCloneUrls.safeDirectoryName("my_repo.v2"))
+    assertNull(GiteaCloneUrls.safeDirectoryName("file:///x"))
+    assertNull(GiteaCloneUrls.safeDirectoryName("a:b"))
+    assertNull(GiteaCloneUrls.safeDirectoryName("../x"))
+    assertNull(GiteaCloneUrls.safeDirectoryName(".."))
+    assertNull(GiteaCloneUrls.safeDirectoryName("."))
+    assertNull(GiteaCloneUrls.safeDirectoryName(""))
+    assertNull(GiteaCloneUrls.safeDirectoryName(null))
+  }
+
   fun `test repositories tab links to the configured server, also with a subpath`() {
     val dto = GiteaJson.fromJson<GiteaRepositoryDTO>(repo("intellij-dev/plugin-playground"))
     assertEquals("${server.uri}/intellij-dev/plugin-playground",
