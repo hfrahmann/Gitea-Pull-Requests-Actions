@@ -15,11 +15,18 @@
 
 Unofficial plugin for IntelliJ to review Pull Requests, view actions and work with Gitea.
 
+> [!IMPORTANT]
+> This is an independent community project. It is **not affiliated with or endorsed by Gitea** – neither by the
+> Gitea project, its maintainers nor any company behind it. "Gitea" and the Gitea logo are used only to name the
+> server software this plugin connects to.
+
 > [!NOTE]
 > This project was built to a large extent with AI assistance, using [Claude Code](https://claude.com/claude-code).
 > All changes were reviewed by a human, and the plugin has been tested against a production Gitea server.
 
 <!-- Plugin description -->
+**Unofficial plugin – not affiliated with or endorsed by Gitea.**
+
 Work with [Gitea](https://about.gitea.com) without leaving the IDE: pull requests and code review like the bundled
 GitHub and GitLab plugins, plus **Gitea Actions** in their own tool window.
 
@@ -49,7 +56,10 @@ GitHub and GitLab plugins, plus **Gitea Actions** in their own tool window.
 
 ---
 
-Requires the Git plugin and Gitea 28 or newer. Not affiliated with the Gitea project.
+Requires the Git plugin and Gitea 28 or newer.
+
+This is an independent community project and is not affiliated with or endorsed by Gitea, the Gitea project or its
+maintainers. "Gitea" is used only to name the server software the plugin connects to.
 <!-- Plugin description end -->
 
 ## Tips

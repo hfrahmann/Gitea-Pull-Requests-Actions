@@ -255,6 +255,14 @@ tasks {
         notCompatibleWithConfigurationCache("Kover drops the test coverage when the configuration cache is reused")
     }
 
+    // The plugin ships the Gitea logo icons: their MIT notice (NOTICE) and our licence go into the jar.
+    jar {
+        from(layout.projectDirectory) {
+            include("LICENSE", "NOTICE")
+            into("META-INF")
+        }
+    }
+
     check {
         dependsOn("koverVerifyCore", "verifyPluginProjectConfiguration", "verifyPluginStructure")
     }
