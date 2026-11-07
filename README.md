@@ -72,8 +72,16 @@ itself: the setting is only reachable through an internal IDE module.
   <img src=".readme/Screenshot3.jpeg" width="600px" />
 </a>
 
-<a href=".readme/Screenshot4.jpeg">
-  <img src=".readme/Screenshot4.jpeg" width="600px" />
+<a href=".readme/Screenshot5.jpeg">
+  <img src=".readme/Screenshot5.jpeg" width="600px" />
+</a>
+
+<a href=".readme/Screenshot6.jpeg">
+  <img src=".readme/Screenshot6.jpeg" width="600px" />
+</a>
+
+<a href=".readme/Screenshot7.jpeg">
+  <img src=".readme/Screenshot7.jpeg" width="600px" />
 </a>
 
 ## Building
