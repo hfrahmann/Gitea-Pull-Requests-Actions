@@ -1,7 +1,11 @@
 
 <p align="center">
-  <img src="https://github.com/hfrahmann/Gitea-Pull-Requests-Actions/actions/workflows/build.yml/badge.svg?branch=main&event=schedule" />
-  <img src="https://img.shields.io/github/v/release/hfrahmann/Gitea-Pull-Requests-Actions" />
+  <a href="https://github.com/hfrahmann/Gitea-Pull-Requests-Actions/actions/workflows/build.yml">
+    <img src="https://github.com/hfrahmann/Gitea-Pull-Requests-Actions/actions/workflows/build.yml/badge.svg?branch=main&event=schedule" />
+  </a>
+  <a href="https://plugins.jetbrains.com/plugin/35606-gitea-pull-requests--actions/">
+    <img src="https://img.shields.io/github/v/release/hfrahmann/Gitea-Pull-Requests-Actions" />
+  </a>
   <img src="https://img.shields.io/github/license/hfrahmann/Gitea-Pull-Requests-Actions" />
   <br /><br />
   <a href="https://plugins.jetbrains.com/plugin/35606-gitea-pull-requests--actions/">Get plugin on Jetbrains Marketplace</a>
