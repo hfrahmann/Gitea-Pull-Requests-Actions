@@ -1,11 +1,15 @@
 package de.hendrikfrahmann.giteaplugin.actions.workflow.run
 
+import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionException
+import com.intellij.execution.ExecutionResult
+import com.intellij.execution.Executor
 import com.intellij.execution.configurations.CommandLineState
-import com.intellij.execution.process.KillableColoredProcessHandler
+import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.progress.runBlockingCancellable
@@ -28,13 +32,23 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.UUID
 
-/** Starts `gitea-runner exec` for a [GiteaWorkflowRunConfiguration]; output in the Run tool window. */
+/**
+ * Starts `gitea-runner exec` for a [GiteaWorkflowRunConfiguration]; its output in the Run tool window, by job and step
+ * like the log of a run on Gitea ([GiteaLocalRunConsole]).
+ */
 class GiteaWorkflowRunState(private val configuration: GiteaWorkflowRunConfiguration, environment: ExecutionEnvironment)
   : CommandLineState(environment) {
 
+  override fun execute(executor: Executor, runner: ProgramRunner<*>): ExecutionResult {
+    val handler = startProcess()
+    val console = GiteaLocalRunConsole(configuration.project, handler)
+    return DefaultExecutionResult(console, handler, *console.createActions())
+  }
+
   override fun startProcess(): ProcessHandler {
     val commandLine = createCommandLine().toGeneralCommandLine()
-    val handler = KillableColoredProcessHandler(commandLine)
+    // not the coloured handler: the console decodes ANSI colours per line itself
+    val handler = KillableProcessHandler(commandLine)
     // SIGINT first: `docker run` passes it on and the runner removes its job containers
     handler.setShouldKillProcessSoftly(true)
     ProcessTerminatedListener.attach(handler)

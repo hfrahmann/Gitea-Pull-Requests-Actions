@@ -5,9 +5,10 @@ import com.intellij.util.execution.ParametersListUtil
 import java.nio.file.Path
 
 /**
- * The command line of a local workflow run: `gitea-runner exec` directly, or in the runner image with the
+ * The command line of a local workflow run: `gitea-runner exec --json` directly, or in the runner image with the
  * Docker socket and the repository mounted at the same path (job containers get the files copied from that path).
  * Secret values never appear in the arguments: `-s NAME` (and `docker run -e NAME`) take them from the environment.
+ * `--json` gives every line its job and step, for [GiteaLocalRunConsole].
  */
 data class GiteaWorkflowCommandLine(
   val runner: Runner,
@@ -41,11 +42,14 @@ data class GiteaWorkflowCommandLine(
                           "-v", "$DOCKER_SOCKET:$DOCKER_SOCKET", "-v", "$root:$root", "-w", root)
         envFile?.let(root::resolveOutside)?.let { command += listOf("-v", "$it:$it:ro") }
         secrets.keys.forEach { command += listOf("-e", it) }
-        command += listOf("--entrypoint", RUNNER_ENTRYPOINT, runner.image)
+        // the repository belongs to the host's user, not to root in the container: without safe.directory, git refuses
+        // it ("dubious ownership") and the run has no sha, ref or remote. The runner calls git with an environment of
+        // its own, so it has to be the system config. "$@" passes the arguments on unchanged.
+        command += listOf("--entrypoint", "sh", runner.image, "-c", RUNNER_SCRIPT, "sh")
       }
       is Runner.Binary -> command += runner.executable
     }
-    command += listOf("exec", "-W", workflowPath)
+    command += listOf("exec", "--json", "-W", workflowPath)
     job?.takeIf { it.isNotBlank() }?.let { command += listOf("-j", it) }
     event?.takeIf { it.isNotBlank() }?.let { command += listOf("-E", it) }
     jobImage?.takeIf { it.isNotBlank() }?.let { command += listOf("--image", it) }
@@ -63,6 +67,7 @@ data class GiteaWorkflowCommandLine(
   companion object {
     const val DOCKER_SOCKET: String = "/var/run/docker.sock"
     const val RUNNER_ENTRYPOINT: String = "gitea-runner"
+    const val RUNNER_SCRIPT: String = "git config --system --add safe.directory '*' 2>/dev/null; exec $RUNNER_ENTRYPOINT \"$@\""
 
     /** `NAME=value` lines (`.env` style): `#` comments, blank lines, optional `export `, quoted values. */
     fun parseEnv(text: String): Map<String, String> {

@@ -37,6 +37,24 @@ class GiteaJobLog(
       return parser.finish(steps)
     }
 
+    /**
+     * A log whose sections are known line by line (local runs: the runner's JSON output names the stage and step of every
+     * line). A section starts wherever [GiteaLogEntry.section] differs from the line before; `::group::` blocks end with it.
+     */
+    fun build(entries: List<GiteaLogEntry>, steps: List<GiteaStep>): GiteaJobLog {
+      val parser = Parser()
+      entries.forEach(parser::addEntry)
+      return parser.finish(steps)
+    }
+
+    /** A log without sections (the runner's own output): lines, groups and highlights only. */
+    fun plain(entries: List<GiteaLogEntry>): GiteaJobLog {
+      val parser = Parser()
+      entries.forEach { parser.addContent(it.timestamp, it.text, detectSections = false) }
+      val log = parser.finish(emptyList())
+      return GiteaJobLog(log.lines, emptyList(), log.groups)
+    }
+
     /** Collects lines, `::group::` ranges and where the steps and the "Complete job" part start. */
     private class Parser {
       private val lines = mutableListOf<GiteaLogLine>()
@@ -44,16 +62,30 @@ class GiteaJobLog(
       private val stepStarts = mutableListOf<Int>()
       private var completeJobStart = -1
       private var openGroup = -1
+      /** Section starts given by [addEntry]; `null` = found by [startsCompleteJob] and the `Run …` groups. */
+      private var knownSections: MutableList<Pair<Int, GiteaLogSectionRef>>? = null
 
       fun addLine(raw: String) {
         val match = TIMESTAMP.matchEntire(raw.trimEnd('\r'))
         val timestamp = match?.groupValues?.get(1)?.let(::parseInstant)
-        val content = match?.groupValues?.get(2) ?: raw.trimEnd('\r')
-        if (startsCompleteJob(content)) {
+        addContent(timestamp, match?.groupValues?.get(2) ?: raw.trimEnd('\r'), detectSections = true)
+      }
+
+      fun addEntry(entry: GiteaLogEntry) {
+        val known = knownSections ?: mutableListOf<Pair<Int, GiteaLogSectionRef>>().also { knownSections = it }
+        if (known.lastOrNull()?.second != entry.section) {
+          endGroup()
+          known += lines.size to entry.section
+        }
+        addContent(entry.timestamp, entry.text, detectSections = false)
+      }
+
+      fun addContent(timestamp: Instant?, content: String, detectSections: Boolean) {
+        if (detectSections && startsCompleteJob(content)) {
           completeJobStart = lines.size
         }
         when {
-          content.startsWith("::group::") -> startGroup(timestamp, content.removePrefix("::group::"))
+          content.startsWith("::group::") -> startGroup(timestamp, content.removePrefix("::group::"), detectSections)
           content.startsWith("::endgroup::") -> endGroup()
           else -> lines += line(timestamp, content)
         }
@@ -66,7 +98,8 @@ class GiteaJobLog(
         if (openGroup >= 0 && openGroup < lines.size) {
           groups += openGroup..lines.lastIndex
         }
-        return GiteaJobLog(lines, sections(lines, stepStarts, completeJobStart, steps), groups.filter { it.last >= it.first })
+        val sections = knownSections?.let { known(lines, it, steps) } ?: sections(lines, stepStarts, completeJobStart, steps)
+        return GiteaJobLog(lines, sections, groups.filter { it.last >= it.first })
       }
 
       /** The runner's clean-up after the last step, outside of any group. */
@@ -76,9 +109,9 @@ class GiteaJobLog(
       }
 
       /** A `Run …` group (before "Complete job") starts a step; a new group also ends an open one. */
-      private fun startGroup(timestamp: Instant?, title: String) {
+      private fun startGroup(timestamp: Instant?, title: String, detectSections: Boolean) {
         closeOpenGroup()
-        if (title.startsWith(STEP_GROUP_PREFIX) && completeJobStart < 0) {
+        if (detectSections && title.startsWith(STEP_GROUP_PREFIX) && completeJobStart < 0) {
           stepStarts += lines.size
         }
         openGroup = lines.size
@@ -116,6 +149,11 @@ class GiteaJobLog(
 
     private class Boundary(val start: Int, val type: GiteaLogSection.Type, val step: GiteaStep?)
 
+    private fun known(lines: List<GiteaLogLine>, known: List<Pair<Int, GiteaLogSectionRef>>, steps: List<GiteaStep>): List<GiteaLogSection> =
+      toSections(lines, known.map { (start, section) ->
+        Boundary(start, section.type, section.stepNumber?.let { number -> steps.find { it.number == number } })
+      })
+
     /** Steps that produced output, in order: the ones that started (skipped steps leave no `Run …` group). */
     private fun sections(lines: List<GiteaLogLine>, stepStarts: List<Int>, completeJobStart: Int, steps: List<GiteaStep>): List<GiteaLogSection> {
       if (lines.isEmpty()) {
@@ -128,6 +166,13 @@ class GiteaJobLog(
         if (completeJobStart >= 0) {
           add(Boundary(completeJobStart, GiteaLogSection.Type.COMPLETE, null))
         }
+      }
+      return toSections(lines, boundaries)
+    }
+
+    private fun toSections(lines: List<GiteaLogLine>, boundaries: List<Boundary>): List<GiteaLogSection> {
+      if (lines.isEmpty()) {
+        return emptyList()
       }
       return boundaries.mapIndexedNotNull { i, boundary ->
         val end = (boundaries.getOrNull(i + 1)?.start ?: lines.size) - 1
@@ -149,6 +194,18 @@ class GiteaJobLog(
       catch (_: DateTimeParseException) {
         null
       }
+  }
+}
+
+/** A log line whose section is known: the text after the timestamp, workflow commands (`::error::`, …) included. */
+data class GiteaLogEntry(val timestamp: Instant?, val text: String, val section: GiteaLogSectionRef)
+
+/** The section of a [GiteaLogEntry]: [stepNumber] for [GiteaLogSection.Type.STEP], else `null`. */
+data class GiteaLogSectionRef(val type: GiteaLogSection.Type, val stepNumber: Long? = null) {
+  companion object {
+    val SET_UP: GiteaLogSectionRef = GiteaLogSectionRef(GiteaLogSection.Type.SET_UP)
+    val COMPLETE: GiteaLogSectionRef = GiteaLogSectionRef(GiteaLogSection.Type.COMPLETE)
+    fun step(number: Long): GiteaLogSectionRef = GiteaLogSectionRef(GiteaLogSection.Type.STEP, number)
   }
 }
 
