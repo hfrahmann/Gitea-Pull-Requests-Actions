@@ -3,6 +3,8 @@ package de.hendrikfrahmann.giteaplugin.settings
 import com.intellij.openapi.components.State
 import com.intellij.openapi.util.JDOMUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.intellij.util.xmlb.SkipDefaultsSerializationFilter
+import com.intellij.util.xmlb.XmlSerializer
 import de.hendrikfrahmann.giteaplugin.api.GiteaServerPath
 import de.hendrikfrahmann.giteaplugin.authentication.accounts.GiteaAccount
 import de.hendrikfrahmann.giteaplugin.authentication.accounts.GiteaPersistentAccounts
@@ -115,10 +117,10 @@ class GiteaLegacyStateTest : BasePlatformTestCase() {
     },
   )
 
-  /** `<component name=…>` with [state] as the platform saves it. */
+  /** `<component name=…>` with [state] as the platform saves it (with its own filter, not the one under test). */
   private fun component(name: String, state: Any?): Element {
     val component = Element("component").setAttribute("name", name)
-    state?.let(GiteaLegacyState::serialize)?.children?.toList()?.forEach { component.addContent(it.detach()) }
+    state?.let { XmlSerializer.serialize(it, SkipDefaultsSerializationFilter()) }?.children?.toList()?.forEach { component.addContent(it.detach()) }
     return component
   }
 
