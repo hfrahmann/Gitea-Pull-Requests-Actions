@@ -26,13 +26,16 @@
   <!--
     VCS platform modules we use directly. Core modules up to 2026.2; from 2026.3 they live in the separate
     "Version Control" plugin (com.intellij.platform.vcs), and a v1 <depends> on Git4Idea doesn't make them visible.
-    All four are public modules.
+    All of them are public modules.
   -->
   <dependencies>
     <module name="intellij.platform.vcs"/>
     <module name="intellij.platform.vcs.impl"/>
     <module name="intellij.platform.vcs.dvcs"/>
     <module name="intellij.platform.vcs.dvcs.impl"/>
+    <!-- the "Gitea Checks" column (vcsLogCommitStatusProvider) -->
+    <module name="intellij.platform.vcs.log"/>
+    <module name="intellij.platform.vcs.log.impl"/>
     <!-- For the bundled jackson-module-kotlin; a public module in every supported version. -->
     <module name="intellij.libraries.kotlin.reflect"/>
   </dependencies>
@@ -70,6 +73,8 @@
                 canCloseContents="true"/>
     <statusBarWidgetFactory id="Gitea.Actions" implementation="de.hendrikfrahmann.giteaplugin.actions.ui.GiteaActionsStatusBarWidgetFactory"
                             order="before Position"/>
+    <!-- "Gitea Checks" column in the Git log: commit statuses per commit, Gitea Actions jobs open in the Actions tool window -->
+    <vcsLogCommitStatusProvider implementation="de.hendrikfrahmann.giteaplugin.log.GiteaCommitChecksProvider"/>
 
     <!-- Review diff in editor tabs -->
     <virtualFileSystem key="giteapr" implementationClass="de.hendrikfrahmann.giteaplugin.pullrequest.file.GiteaVirtualFileSystem"/>

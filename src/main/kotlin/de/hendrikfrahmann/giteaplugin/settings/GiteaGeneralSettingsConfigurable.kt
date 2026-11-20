@@ -48,6 +48,7 @@ class GiteaGeneralSettingsConfigurable(private val project: Project)
     }
   }
 
+  @Suppress("DialogTitleCapitalization") // the units after the number fields are lower case
   private fun Panel.refreshGroup(settings: GiteaSettings) {
     group(GiteaBundle.message("settings.refresh.group")) {
       row(GiteaBundle.message("settings.refresh.fast")) {
@@ -64,6 +65,13 @@ class GiteaGeneralSettingsConfigurable(private val project: Project)
           .gap(RightGap.SMALL)
         label(GiteaBundle.message("settings.seconds"))
       }
+      row(GiteaBundle.message("settings.refresh.log.checks")) {
+        intTextField(GiteaSettings.LOG_CHECKS_RECHECK_RANGE)
+          .columns(NUMBER_COLUMNS)
+          .bindIntText({ settings.logChecksRecheckMinutes }, { settings.logChecksRecheckMinutes = it })
+          .gap(RightGap.SMALL)
+        label(GiteaBundle.message("settings.minutes"))
+      }.rowComment(GiteaBundle.message("settings.refresh.log.checks.comment"))
       row {
         checkBox(GiteaBundle.message("settings.refresh.pause"))
           .bindSelected({ settings.pauseRefreshInBackground }, { settings.pauseRefreshInBackground = it })

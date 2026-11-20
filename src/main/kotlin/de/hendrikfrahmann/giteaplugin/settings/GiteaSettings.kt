@@ -74,6 +74,9 @@ class GiteaSettings : PersistentStateComponent<GiteaSettings.SettingsState> {
     /** No polling while no IDE window is focused; the next refresh runs when the IDE is activated again. */
     var pauseRefreshInBackground: Boolean = true
 
+    /** Git log "Gitea Checks": commits without checks (or not on the server) are asked again after this; 0 = once per session. */
+    var logChecksRecheckMinutes: Int = 2
+
     /** Accept `-rc`/`+dev` builds; feature gates treat a pre-release of X as X. */
     var acceptPreReleases: Boolean = false
 
@@ -221,6 +224,12 @@ class GiteaSettings : PersistentStateComponent<GiteaSettings.SettingsState> {
       state.refreshSlowSeconds = value.coerceIn(REFRESH_SLOW_RANGE)
     }
 
+  var logChecksRecheckMinutes: Int
+    get() = state.logChecksRecheckMinutes.coerceIn(LOG_CHECKS_RECHECK_RANGE)
+    set(value) {
+      state.logChecksRecheckMinutes = value.coerceIn(LOG_CHECKS_RECHECK_RANGE)
+    }
+
   private val pauseRefreshFlow = MutableStateFlow(true)
 
   /** See [SettingsState.pauseRefreshInBackground]; paused refreshes follow changes right away. */
@@ -290,6 +299,7 @@ class GiteaSettings : PersistentStateComponent<GiteaSettings.SettingsState> {
     val RUNS_PAGE_SIZE_RANGE: IntRange = 5..50
     val REFRESH_FAST_RANGE: IntRange = 2..300
     val REFRESH_SLOW_RANGE: IntRange = 10..3600
+    val LOG_CHECKS_RECHECK_RANGE: IntRange = 0..1440
 
     fun getInstance(): GiteaSettings = service()
 
