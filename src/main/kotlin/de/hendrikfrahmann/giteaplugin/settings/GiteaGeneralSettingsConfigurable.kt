@@ -48,6 +48,7 @@ class GiteaGeneralSettingsConfigurable(private val project: Project)
     }
   }
 
+  @Suppress("DialogTitleCapitalization") // the units after the number fields are lower case
   private fun Panel.refreshGroup(settings: GiteaSettings) {
     group(GiteaBundle.message("settings.refresh.group")) {
       row(GiteaBundle.message("settings.refresh.fast")) {

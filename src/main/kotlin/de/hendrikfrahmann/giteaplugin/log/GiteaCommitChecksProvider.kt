@@ -97,10 +97,10 @@ sealed interface GiteaCommitChecksStatus : VcsCommitExternalStatus {
       }
       HtmlBuilder().apply {
         append(HtmlChunk.text(summary).bold())
-        for (check in checks) {
+        for ((job, description) in checks) {
           append(HtmlChunk.br())
-          append(HtmlChunk.text(check.job.name))
-          check.description?.let { append(HtmlChunk.text(" – $it")) }
+          append(HtmlChunk.text(job.name))
+          description?.let { append(HtmlChunk.text(" – $it")) }
         }
       }.wrapWithHtmlBody().toString()
     }

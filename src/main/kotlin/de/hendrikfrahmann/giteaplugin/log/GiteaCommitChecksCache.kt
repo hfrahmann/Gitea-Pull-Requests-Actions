@@ -91,7 +91,7 @@ class GiteaCommitChecksCache(val cs: CoroutineScope) {
           }
         }
         finally {
-          inFlight.remove(key)
+          inFlight.keys.remove(key)
         }
       }
     }
