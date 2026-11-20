@@ -50,6 +50,8 @@ GitHub and GitLab plugins, plus **Gitea Actions** in their own tool window.
 - Run workflows manually (`workflow_dispatch`), also from the play icons in the workflow file – on Gitea or locally
   in Docker with `gitea-runner exec`, with the local log shown by job and step like on Gitea.
 - Status bar widget, finish notifications, repository secrets and variables.
+- A "Gitea Checks" column in the Git log with the checks of every commit; a click opens the job in the Actions tool
+  window.
 
 **Issues**
 - Gitea issues as tasks (*Tools | Tasks | Servers*, needs the bundled "Issue Trackers" plugin).
