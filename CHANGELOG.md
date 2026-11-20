@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-11-20
+
+### Fixed
+
+- "Conflicting component name 'GiteaSettings'" error when another Gitea plugin is installed: the plugin stores its settings
+  under its own names now. Settings and accounts are taken
+  over from `gitea.xml` once; per-project state (selected remote, default account, seen/viewed PRs, filter history) starts
+  fresh.
+
 ## [1.0.4] - 2026-11-10
 
 ### Added

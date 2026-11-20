@@ -16,7 +16,7 @@ import de.hendrikfrahmann.giteaplugin.pullrequest.ui.filters.GiteaPullRequestsFi
 
 /** Last filter and search history of the PR list, per project (workspace file). */
 @Service(Service.Level.PROJECT)
-@State(name = "GiteaPullRequestFiltersHistory", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)], reportStatistic = false)
+@State(name = "de.hendrikfrahmann.giteaplugin.PullRequestFiltersHistory", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)], reportStatistic = false)
 class GiteaPullRequestsPersistentFiltersHistory : PersistentStateComponent<GiteaPullRequestsPersistentFiltersHistory.HistoryState> {
   class HistoryState {
     @get:XCollection(style = XCollection.Style.v2)
