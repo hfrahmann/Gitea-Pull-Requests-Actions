@@ -15,7 +15,7 @@ import de.hendrikfrahmann.giteaplugin.authentication.accounts.GiteaAccount
  * preferences. PR list filters are kept by `GiteaPullRequestsPersistentFiltersHistory`.
  */
 @Service(Service.Level.PROJECT)
-@State(name = "GiteaProjectSettings", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)], reportStatistic = false)
+@State(name = "de.hendrikfrahmann.giteaplugin.ProjectSettings", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)], reportStatistic = false)
 class GiteaProjectSettings : PersistentStateComponent<GiteaProjectSettings.SettingsState> {
   class SettingsState {
     var selectedRemoteUrl: String? = null

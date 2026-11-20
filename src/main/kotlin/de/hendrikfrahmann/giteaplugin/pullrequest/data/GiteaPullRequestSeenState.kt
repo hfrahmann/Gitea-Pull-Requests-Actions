@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
  * stays local.
  */
 @Service(Service.Level.PROJECT)
-@State(name = "GiteaPullRequestSeenState", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)], reportStatistic = false)
+@State(name = "de.hendrikfrahmann.giteaplugin.PullRequestSeenState", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)], reportStatistic = false)
 class GiteaPullRequestSeenState : PersistentStateComponent<GiteaPullRequestSeenState.SeenState> {
   class SeenState {
     @get:MapAnnotation(surroundWithTag = false)

@@ -8,15 +8,16 @@ import com.intellij.openapi.components.SettingsCategory
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.annotations.XCollection
+import de.hendrikfrahmann.giteaplugin.settings.GiteaLegacyState
 import kotlinx.coroutines.flow.MutableStateFlow
 
-/** Account list (no secrets) in `gitea.xml`. Not roamed: tokens are machine-local, an account without one is useless. */
+/** Account list (no secrets) in `de.hendrikfrahmann.giteaplugin.xml`. Not roamed: tokens are machine-local, an account without one is useless. */
 @Service(Service.Level.APP)
 @State(
-  name = "GiteaAccounts",
+  name = "de.hendrikfrahmann.giteaplugin.Accounts",
   category = SettingsCategory.TOOLS,
   exportable = true,
-  storages = [Storage(value = "gitea.xml", roamingType = RoamingType.DISABLED)],
+  storages = [Storage(value = "de.hendrikfrahmann.giteaplugin.xml", roamingType = RoamingType.DISABLED)],
   reportStatistic = false,
 )
 class GiteaPersistentAccounts : ObservableAccountsRepository<GiteaAccount>, PersistentStateComponent<GiteaPersistentAccounts.AccountsState> {
@@ -42,6 +43,17 @@ class GiteaPersistentAccounts : ObservableAccountsRepository<GiteaAccount>, Pers
   }
 
   override fun noStateLoaded() {
-    accountsFlow.value = emptySet()
+    val legacy = GiteaLegacyState.read(LEGACY_COMPONENT_NAME, AccountsState::class.java)
+    if (legacy != null) {
+      loadState(legacy)
+    }
+    else {
+      accountsFlow.value = emptySet()
+    }
+  }
+
+  companion object {
+    /** Component name before 1.0.5, see [GiteaLegacyState]. */
+    internal const val LEGACY_COMPONENT_NAME: String = "GiteaAccounts"
   }
 }

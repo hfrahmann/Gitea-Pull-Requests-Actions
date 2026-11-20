@@ -18,9 +18,9 @@ import java.nio.file.Path
 /** What runs local workflow runs. */
 enum class GiteaLocalRunner { DOCKER, BINARY }
 
-/** Application-level Gitea settings (`gitea.xml`). Values are range-checked on read and write. */
+/** Application-level Gitea settings (`de.hendrikfrahmann.giteaplugin.xml`). Values are range-checked on read and write. */
 @Service(Service.Level.APP)
-@State(name = "GiteaSettings", storages = [Storage("gitea.xml")], category = SettingsCategory.TOOLS)
+@State(name = "de.hendrikfrahmann.giteaplugin.Settings", storages = [Storage("de.hendrikfrahmann.giteaplugin.xml")], category = SettingsCategory.TOOLS)
 class GiteaSettings : PersistentStateComponent<GiteaSettings.SettingsState> {
   class SettingsState {
     /**
@@ -103,6 +103,10 @@ class GiteaSettings : PersistentStateComponent<GiteaSettings.SettingsState> {
     reviewModeFlow.value = state.reviewModeInEditors
     timelineEventsFlow.value = state.showTimelineEvents
     pauseRefreshFlow.value = state.pauseRefreshInBackground
+  }
+
+  override fun noStateLoaded() {
+    GiteaLegacyState.read(LEGACY_COMPONENT_NAME, SettingsState::class.java)?.let(::loadState)
   }
 
   private val hostMappingsFlow = MutableStateFlow(GiteaHostMappings.EMPTY)
@@ -278,6 +282,9 @@ class GiteaSettings : PersistentStateComponent<GiteaSettings.SettingsState> {
 
   companion object {
     const val DEFAULT_RUNNER_IMAGE: String = "gitea/runner:latest"
+
+    /** Component name before 1.0.5, see [GiteaLegacyState]. */
+    internal const val LEGACY_COMPONENT_NAME: String = "GiteaSettings"
 
     val CONNECTION_TIMEOUT_RANGE: IntRange = 1..300
     val RUNS_PAGE_SIZE_RANGE: IntRange = 5..50

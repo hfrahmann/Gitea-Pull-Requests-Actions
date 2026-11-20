@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.asSharedFlow
  * a new commit to the file makes it unviewed again. Gitea has no API for this (unlike GitHub), so it stays local.
  */
 @Service(Service.Level.PROJECT)
-@State(name = "GiteaPullRequestViewedState", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)], reportStatistic = false)
+@State(name = "de.hendrikfrahmann.giteaplugin.PullRequestViewedState", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)], reportStatistic = false)
 class GiteaPullRequestViewedState : PersistentStateComponent<GiteaPullRequestViewedState.ViewedState> {
   class ViewedState {
     @get:MapAnnotation(surroundWithTag = false)

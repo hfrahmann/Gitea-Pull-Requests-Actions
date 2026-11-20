@@ -12,7 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 
 /** The account to use in this project when several match (workspace file, not shared). */
 @Service(Service.Level.PROJECT)
-@State(name = "GiteaDefaultAccount", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)], reportStatistic = false)
+@State(name = "de.hendrikfrahmann.giteaplugin.DefaultAccount", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)], reportStatistic = false)
 class GiteaProjectDefaultAccountHolder(project: Project, cs: CoroutineScope)
   : PersistentDefaultAccountHolder<GiteaAccount>(project, cs) {
 
