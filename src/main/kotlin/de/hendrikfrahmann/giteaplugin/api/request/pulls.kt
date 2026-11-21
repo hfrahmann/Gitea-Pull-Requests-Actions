@@ -5,6 +5,7 @@ import de.hendrikfrahmann.giteaplugin.api.GiteaApi
 import de.hendrikfrahmann.giteaplugin.api.GiteaPagination
 import de.hendrikfrahmann.giteaplugin.api.GiteaRepositoryPath
 import de.hendrikfrahmann.giteaplugin.api.GiteaResponse
+import de.hendrikfrahmann.giteaplugin.api.dto.GiteaChangedFileDTO
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaCombinedStatusDTO
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaCommitDTO
 import de.hendrikfrahmann.giteaplugin.api.dto.GiteaIssueDTO
@@ -182,6 +183,12 @@ suspend fun GiteaApi.loadPullRequestCommits(repository: GiteaRepositoryPath, num
       "files" eq false
       page(page, limit)
     })
+  }
+
+/** `GET /repos/{o}/{r}/pulls/{index}/files` – all pages, without the patches. */
+suspend fun GiteaApi.loadPullRequestFiles(repository: GiteaRepositoryPath, number: Long): List<GiteaChangedFileDTO> =
+  GiteaPagination.loadAllPages { page, limit ->
+    getJsonList(server.repoApiUri(repository, "pulls", number.toString(), "files").withQuery { page(page, limit) })
   }
 
 /** `GET /repos/{o}/{r}/pulls/{index}.diff` – unified diff merge base → head (empty for an empty PR). */

@@ -53,6 +53,10 @@ GitHub and GitLab plugins, plus **Gitea Actions** in their own tool window.
 - A "Gitea Checks" column in the Git log with the checks of every commit; a click opens the job in the Actions tool
   window.
 
+**AI assistants**
+- Optional Gitea tools for assistants connected to the IDE's MCP server: read pull requests, reviews, checks, Actions
+  runs and job logs; with a second switch also comment, review, merge and re-run as your account. Off by default.
+
 **Issues**
 - Gitea issues as tasks (*Tools | Tasks | Servers*, needs the bundled "Issue Trackers" plugin).
 

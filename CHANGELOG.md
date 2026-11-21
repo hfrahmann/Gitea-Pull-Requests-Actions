@@ -8,11 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Git log: a "Gitea Checks" column shows the combined result of each commit's checks (Gitea Actions and external CI), with
-  the checks in the tooltip. Clicking it lists the checks; a Gitea Actions job opens in the Actions tool window with its
-  log, other checks in the browser. Running checks update by themselves. Only the visible rows are loaded, and nothing while
-  the column is hidden (column menu of the log). How often commits without checks are asked again is set under
-  *Settings | Version Control | Gitea | Settings | Refresh*.
+- Git log: a "Gitea Checks" column with the checks of each commit; a click lists them, Gitea Actions jobs open in the
+  Actions tool window. Only visible rows are loaded.
+- Gitea tools for AI assistants via the IDE's MCP server (`giteapr_…`, categories "Gitea Pull Requests" and "Gitea
+  Actions"): read pull requests, reviews, checks, runs and job logs; optionally also comment, review, merge, re-run and
+  dispatch. Off by default, see *Settings | Version Control | Gitea | Settings*.
 
 ## [1.0.5] - 2026-11-20
 

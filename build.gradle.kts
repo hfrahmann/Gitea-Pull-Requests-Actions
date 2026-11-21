@@ -11,6 +11,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 plugins {
     id("java")
     alias(libs.plugins.kotlin)
+    // @Serializable tool parameters: the MCP server builds their JSON schemas with kotlinx.serialization (from the IDE)
+    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.intellijPlatform)
     alias(libs.plugins.changelog)
     alias(libs.plugins.detekt)
@@ -70,6 +72,7 @@ dependencies {
         bundledPlugin("Git4Idea")
         bundledPlugin("com.intellij.tasks")
         bundledPlugin("org.jetbrains.plugins.yaml")
+        bundledPlugin("com.intellij.mcpServer")
         bundledModule("intellij.platform.collaborationTools")
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.JUnit5)

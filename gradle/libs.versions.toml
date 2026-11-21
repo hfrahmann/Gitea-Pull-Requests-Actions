@@ -21,6 +21,7 @@ detekt-ktlint = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 intellijPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intellijPlatform" }
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }

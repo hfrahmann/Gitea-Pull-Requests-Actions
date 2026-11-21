@@ -5,6 +5,7 @@ import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogPanel
+import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.Panel
@@ -15,12 +16,13 @@ import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.selected
 import com.intellij.ui.layout.not
 import com.intellij.ui.layout.selectedValueMatches
 import de.hendrikfrahmann.giteaplugin.actions.workflow.run.GiteaLocalRunnerUi
 import de.hendrikfrahmann.giteaplugin.util.GiteaBundle
 
-/** `Settings | Version Control | Gitea | Settings` – pull requests, refresh, Gitea Actions, local workflow runs; child of [GiteaSettingsConfigurable]. */
+/** `Settings | Version Control | Gitea | Settings` – pull requests, refresh, Gitea Actions, local workflow runs, MCP tools; child of [GiteaSettingsConfigurable]. */
 class GiteaGeneralSettingsConfigurable(private val project: Project)
   : BoundConfigurable(GiteaBundle.message("settings.general.display.name"), HELP_TOPIC) {
 
@@ -31,6 +33,7 @@ class GiteaGeneralSettingsConfigurable(private val project: Project)
       refreshGroup(settings)
       actionsGroup(settings)
       localRunsGroup(settings)
+      mcpGroup(settings)
     }
   }
 
@@ -140,6 +143,25 @@ class GiteaGeneralSettingsConfigurable(private val project: Project)
           .bindText({ settings.jobImage }, { settings.jobImage = it })
           .comment(GiteaBundle.message("settings.local.runs.job.image.comment"))
           .align(AlignX.FILL)
+      }
+    }
+  }
+
+  /** Gitea tools for AI assistants connected to the IDE's MCP server; both switches off by default. */
+  private fun Panel.mcpGroup(settings: GiteaSettings) {
+    group(GiteaBundle.message("settings.mcp.group")) {
+      lateinit var tools: Cell<JBCheckBox>
+      row {
+        tools = checkBox(GiteaBundle.message("settings.mcp.tools"))
+          .bindSelected({ settings.mcpToolsEnabled }, { settings.mcpToolsEnabled = it })
+          .comment(GiteaBundle.message("settings.mcp.tools.comment"))
+      }
+      indent {
+        row {
+          checkBox(GiteaBundle.message("settings.mcp.write.tools"))
+            .bindSelected({ settings.mcpWriteToolsEnabled }, { settings.mcpWriteToolsEnabled = it })
+            .comment(GiteaBundle.message("settings.mcp.write.tools.comment"))
+        }.enabledIf(tools.selected)
       }
     }
   }

@@ -22,6 +22,8 @@
   <!-- Gitea issues as tasks; everything touching com.intellij.tasks is in the tasks/ package -->
   <depends optional="true" config-file="gitea-tasks.xml">com.intellij.tasks</depends>
   <depends optional="true" config-file="gitea-yaml.xml">org.jetbrains.plugins.yaml</depends>
+  <!-- Gitea tools for the IDE's MCP server (opt-in in the settings); everything touching com.intellij.mcpserver is in mcp/server -->
+  <depends optional="true" config-file="gitea-mcp.xml">com.intellij.mcpServer</depends>
 
   <!--
     VCS platform modules we use directly. Core modules up to 2026.2; from 2026.3 they live in the separate

@@ -165,6 +165,11 @@ class GiteaToolWindowConnectedProjectViewModel(
     }
   }
 
+  /** Reloads PR [number] where it is shown (details, timeline, review threads); nothing if it isn't loaded. */
+  fun refreshPullRequest(number: Long) {
+    synchronized(dataProviders) { dataProviders[number] }?.refresh()
+  }
+
   /** One per PR and connection, shared by its details and timeline tabs. */
   fun dataProvider(number: Long): GiteaPullRequestDataProvider = synchronized(dataProviders) {
     dataProviders.getOrPut(number) { GiteaPullRequestDataProvider(cs, project, connection, number) }
