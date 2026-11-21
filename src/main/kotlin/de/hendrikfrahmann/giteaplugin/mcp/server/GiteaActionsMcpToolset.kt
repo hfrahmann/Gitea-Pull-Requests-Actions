@@ -17,16 +17,16 @@ class GiteaActionsMcpToolset : McpToolset {
   override fun isEnabled(): Boolean = GiteaMcpToolCalls.toolsEnabled()
 
   // see GiteaPullRequestsMcpToolset: McpToolset methods of newer IDEs, deliberately without `override`
-  @Suppress("FunctionOnlyReturningConstant") // overrides the interface's method in newer IDEs
+  @Suppress("FunctionOnlyReturningConstant", "unused") // overrides the interface's method in newer IDEs
   fun isExperimental(): Boolean = false
 
-  @Suppress("FunctionOnlyReturningConstant") // see isExperimental
+  @Suppress("FunctionOnlyReturningConstant", "unused") // see isExperimental
   fun isUserConfigurable(): Boolean = true
 
-  @Suppress("FunctionOnlyReturningConstant") // see isExperimental
+  @Suppress("FunctionOnlyReturningConstant", "unused") // see isExperimental
   fun displayName(): String = "Gitea Actions"
 
-  @Suppress("FunctionOnlyReturningConstant") // see isExperimental
+  @Suppress("FunctionOnlyReturningConstant", "unused") // see isExperimental
   fun displayDescription(): String = "Gitea Actions workflow runs, jobs and logs of the project's Gitea repositories"
 
   private suspend fun call(tool: suspend GiteaActionsMcpService.() -> String): String = GiteaMcpToolCalls.call(::GiteaActionsMcpService, tool)
@@ -72,7 +72,7 @@ class GiteaActionsMcpToolset : McpToolset {
   ): String = call { listWorkflows(repository, ref) }
 
   @McpTool(name = "giteapr_rerun_action")
-  @McpDescription("Re-runs a workflow run: all jobs, only the failed ones, or one job (as a new attempt)." + WRITE)
+  @McpDescription("Re-runs a workflow run: all jobs, only the failed ones, or one job (as a new attempt).$WRITE")
   suspend fun rerunAction(
     @McpDescription("Run id") runId: Long,
     @McpDescription("Re-run only this job (a job id of the run's latest attempt)") jobId: Long? = null,
@@ -81,14 +81,14 @@ class GiteaActionsMcpToolset : McpToolset {
   ): String = call { rerun(repository, runId, jobId, failedOnly) }
 
   @McpTool(name = "giteapr_cancel_action_run")
-  @McpDescription("Cancels a queued or running workflow run." + WRITE)
+  @McpDescription("Cancels a queued or running workflow run.$WRITE")
   suspend fun cancelActionRun(
     @McpDescription("Run id") runId: Long,
     @McpDescription(REPOSITORY) repository: String? = null,
   ): String = call { cancel(repository, runId) }
 
   @McpTool(name = "giteapr_dispatch_workflow")
-  @McpDescription("Starts a workflow that has a workflow_dispatch trigger (see giteapr_list_workflows); returns the new run's id." + WRITE)
+  @McpDescription("Starts a workflow that has a workflow_dispatch trigger (see giteapr_list_workflows); returns the new run's id.$WRITE")
   suspend fun dispatchWorkflow(
     @McpDescription("Workflow file name, e.g. ci.yml") workflow: String,
     @McpDescription("Branch or tag to run on; default: the repository's default branch") ref: String? = null,

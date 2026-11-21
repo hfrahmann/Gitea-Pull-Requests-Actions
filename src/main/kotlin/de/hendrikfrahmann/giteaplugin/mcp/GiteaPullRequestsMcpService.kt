@@ -424,7 +424,7 @@ class GiteaPullRequestsMcpService(private val env: GiteaMcpEnvironment) {
     GiteaReviewThread.build(reviews, comments)
   }
 
-  private data class ValidComment(val path: String, val side: Side, val line: Int, val body: String)
+  private class ValidComment(val path: String, val side: Side, val line: Int, val body: String)
 
   private fun validComment(comment: GiteaMcpReviewComment): ValidComment {
     checkText(comment.path, "path")
