@@ -6,6 +6,7 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.options.BoundConfigurable
+import com.intellij.openapi.options.NoAutomaticReset
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.ValidationInfo
@@ -47,8 +48,11 @@ import kotlinx.coroutines.launch
 /**
  * `Settings | Version Control | Gitea` – accounts, test connection, how to reach servers (default server, timeout, SSH,
  * pre-releases, remote hosts, custom OAuth apps). Behaviour options are on the child page [GiteaGeneralSettingsConfigurable].
+ *
+ * [NoAutomaticReset]: the non-modal Settings would reset the page when the window gets the focus back – a browser login
+ * takes the focus, and coming back would drop the account that arrived meanwhile but isn't applied yet.
  */
-class GiteaSettingsConfigurable(private val project: Project) : BoundConfigurable("Gitea", HELP_TOPIC) {
+class GiteaSettingsConfigurable(private val project: Project) : BoundConfigurable("Gitea", HELP_TOPIC), NoAutomaticReset {
   private var testJob: Job? = null
   internal val accountsModel = GiteaAccountsListModel()
 
@@ -66,23 +70,6 @@ class GiteaSettingsConfigurable(private val project: Project) : BoundConfigurabl
       oauthAppsGroup(settings)
     }
   }
-
-  /**
-   * Keeps accounts that were logged in but not applied yet when the Settings window gets the focus back.
-   *
-   * The non-modal Settings of newer IDEs reset a page that was unmodified when the window lost the focus and is modified when it
-   * gets it back, taking that for an outside change. A browser login is exactly that: the browser takes the focus, the account
-   * arrives meanwhile, and coming back would remove it again. Those IDEs have `NoAutomaticReset` for this, but 2026.1 doesn't,
-   * so a class implementing it wouldn't load there. Replace this with that interface once sinceBuild is 262 or later.
-   */
-  override fun reset() {
-    if (accountsModel.newCredentials.isEmpty() || !isResetOnWindowFocus()) {
-      super.reset()
-    }
-  }
-
-  private fun isResetOnWindowFocus(): Boolean =
-    StackWalker.getInstance().walk { frames -> frames.anyMatch { it.methodName == WINDOW_FOCUS_RESET_METHOD } }
 
   /** The accounts list and "Test Connection" with its result below. */
   private fun Panel.accountsRows(scope: CoroutineScope, accountsModel: GiteaAccountsListModel) {
@@ -205,8 +192,6 @@ class GiteaSettingsConfigurable(private val project: Project) : BoundConfigurabl
   }
 
   companion object {
-    /** `SettingsEditor`'s method behind the reset described at [reset]. */
-    private const val WINDOW_FOCUS_RESET_METHOD = "resetUnmodifiedOnWindowFocus"
     const val HELP_TOPIC: String = "settings.gitea"
 
     private const val SERVER_COLUMNS = 30

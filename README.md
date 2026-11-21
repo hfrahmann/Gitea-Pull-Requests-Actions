@@ -58,7 +58,7 @@ GitHub and GitLab plugins, plus **Gitea Actions** in their own tool window.
   runs and job logs; with a second switch also comment, review, merge and re-run as your account. Off by default.
 
 **Issues**
-- Gitea issues as tasks (*Tools | Tasks | Servers*, needs the bundled "Issue Trackers" plugin).
+- Gitea issues as tasks (*Tools | Tasks | Servers*, needs the "Issue Trackers" plugin).
 
 ---
 
