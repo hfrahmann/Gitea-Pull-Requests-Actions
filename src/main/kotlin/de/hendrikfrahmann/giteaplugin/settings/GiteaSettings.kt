@@ -94,6 +94,12 @@ class GiteaSettings : PersistentStateComponent<GiteaSettings.SettingsState> {
 
     /** Image the jobs run in (`exec --image`); empty = the runner's default. */
     var jobImage: String = ""
+
+    /** Offer the Gitea tools (read-only) to the IDE's MCP server (bundled plugin `com.intellij.mcpServer`). */
+    var mcpToolsEnabled: Boolean = false
+
+    /** With [mcpToolsEnabled]: also the tools that comment, review, merge, re-run, … as the user's account. */
+    var mcpWriteToolsEnabled: Boolean = false
   }
 
   private var state = SettingsState()
@@ -276,6 +282,20 @@ class GiteaSettings : PersistentStateComponent<GiteaSettings.SettingsState> {
     get() = state.jobImage
     set(value) {
       state.jobImage = value.trim()
+    }
+
+  /** See [SettingsState.mcpToolsEnabled]; checked on every tool call. */
+  var mcpToolsEnabled: Boolean
+    get() = state.mcpToolsEnabled
+    set(value) {
+      state.mcpToolsEnabled = value
+    }
+
+  /** See [SettingsState.mcpWriteToolsEnabled]; only in effect together with [mcpToolsEnabled] (the tools check both). */
+  var mcpWriteToolsEnabled: Boolean
+    get() = state.mcpWriteToolsEnabled
+    set(value) {
+      state.mcpWriteToolsEnabled = value
     }
 
   /** [artifactsDirectory], or `~/Downloads` (the home folder if there is none). */
