@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Requires IntelliJ-based IDEs 2026.2 or newer.
+
 ### Added
 
 - Git log: a "Gitea Checks" column with the checks of each commit; a click lists them, Gitea Actions jobs open in the

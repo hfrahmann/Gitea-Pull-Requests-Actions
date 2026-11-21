@@ -23,10 +23,11 @@ group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
 
 kotlin {
-    jvmToolchain(21)
+    // 2026.2 is built for Java 25 – its inline functions can only be inlined into Java 25 bytecode
+    jvmToolchain(25)
     compilerOptions {
-        // 2026.1 (sinceBuild 261) bundles kotlin-stdlib 2.3.x – don't call newer stdlib APIs
-        apiVersion = KotlinVersion.KOTLIN_2_3
+        // 2026.2 (sinceBuild 262) bundles kotlin-stdlib 2.4.x – don't call newer stdlib APIs
+        apiVersion = KotlinVersion.KOTLIN_2_4
         // Rely on the platform's JVM default methods instead of generating bridges to them – those bridges
         // count as overrides of deprecated defaults (e.g. VcsCloneDialogExtension.createMainComponent(Project))
         jvmDefault = JvmDefaultMode.NO_COMPATIBILITY
@@ -70,7 +71,10 @@ dependencies {
     intellijPlatform {
         intellijIdea(providers.gradleProperty("platformVersion"))
         bundledPlugin("Git4Idea")
-        bundledPlugin("com.intellij.tasks")
+        // "Issue Trackers": not bundled with 2026.2 (Marketplace), bundled again from 2026.3 on
+        compatiblePlugin("com.intellij.tasks")
+        // the task API itself (com.intellij.tasks.*) is a platform module in 2026.2
+        bundledModule("intellij.platform.tasks")
         bundledPlugin("org.jetbrains.plugins.yaml")
         bundledPlugin("com.intellij.mcpServer")
         bundledModule("intellij.platform.collaborationTools")

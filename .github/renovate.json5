@@ -23,15 +23,15 @@
   ],
   packageRules: [
     {
-      // compiled against the lowest supported major (sinceBuild 261): patch updates inside 2026.1.x only.
+      // compiled against the lowest supported major (sinceBuild 262): patch updates inside 2026.2.x only.
       // Raising the major means raising pluginSinceBuild and the Kotlin apiVersion with it – a decision, not an update.
       matchDepNames: ['com.jetbrains.intellij.idea:idea'],
-      allowedVersions: '/^2026\\.1\\./',
+      allowedVersions: '/^2026\\.2\\./',
     },
     {
-      // the JDK of setup-java in the workflows: Java 21 like jvmToolchain(21) and the runtime of sinceBuild 261
+      // the JDK of setup-java in the workflows: Java 25 like jvmToolchain(25) and the runtime of sinceBuild 262
       matchDepNames: ['java-jdk'],
-      allowedVersions: '21',
+      allowedVersions: '25',
     },
     {
       // the Kotlin compiler may move on; the apiVersion in build.gradle.kts stays tied to sinceBuild
