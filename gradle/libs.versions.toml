@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.4.21"
-jackson = "2.22.4"
+jackson = "2.23.0"
 intellijPlatform = "2.20.1"
 changelog = "2.5.0"
 junit5 = "5.14.4"
