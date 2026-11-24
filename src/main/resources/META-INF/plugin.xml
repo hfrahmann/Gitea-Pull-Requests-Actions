@@ -55,31 +55,33 @@
     <actionPromoter implementation="de.hendrikfrahmann.giteaplugin.ui.action.GiteaRefreshActionPromoter"/>
     <!-- Settings | Version Control | Gitea (accounts, connections), next to GitHub and GitLab (same parent and weight as
          theirs); the behaviour options are on Settings | Tools | Gitea (refresh) with the child pages Pull Requests,
-         Actions and MCP (in this order: the Settings tree sorts by groupWeight, then by name). All keep storing in de.hendrikfrahmann.giteaplugin.xml -->
+         Actions and MCP (in this order: the Settings tree sorts by groupWeight, then by name). The Tools pages are
+         application-level like their storage (de.hendrikfrahmann.giteaplugin.xml, shared by all projects), so the tree
+         doesn't mark them "current project only". -->
     <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings"
                          parentId="project.propVCSSupport.Mappings"
                          groupWeight="-500"
                          displayName="Gitea"
                          instance="de.hendrikfrahmann.giteaplugin.settings.GiteaSettingsConfigurable"/>
-    <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings.general"
-                         parentId="tools"
-                         bundle="messages.GiteaBundle" key="settings.general.display.name"
-                         instance="de.hendrikfrahmann.giteaplugin.settings.GiteaGeneralSettingsConfigurable"/>
-    <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings.pullRequests"
-                         parentId="de.hendrikfrahmann.giteaplugin.settings.general"
-                         groupWeight="30"
-                         bundle="messages.GiteaBundle" key="settings.pull.requests.display.name"
-                         instance="de.hendrikfrahmann.giteaplugin.settings.GiteaPullRequestsSettingsConfigurable"/>
-    <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings.actions"
-                         parentId="de.hendrikfrahmann.giteaplugin.settings.general"
-                         groupWeight="20"
-                         bundle="messages.GiteaBundle" key="settings.actions.display.name"
-                         instance="de.hendrikfrahmann.giteaplugin.settings.GiteaActionsSettingsConfigurable"/>
-    <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings.mcp"
-                         parentId="de.hendrikfrahmann.giteaplugin.settings.general"
-                         groupWeight="10"
-                         bundle="messages.GiteaBundle" key="settings.mcp.display.name"
-                         instance="de.hendrikfrahmann.giteaplugin.settings.GiteaMcpSettingsConfigurable"/>
+    <applicationConfigurable id="de.hendrikfrahmann.giteaplugin.settings.general"
+                             parentId="tools"
+                             bundle="messages.GiteaBundle" key="settings.general.display.name"
+                             instance="de.hendrikfrahmann.giteaplugin.settings.GiteaGeneralSettingsConfigurable"/>
+    <applicationConfigurable id="de.hendrikfrahmann.giteaplugin.settings.pullRequests"
+                             parentId="de.hendrikfrahmann.giteaplugin.settings.general"
+                             groupWeight="30"
+                             bundle="messages.GiteaBundle" key="settings.pull.requests.display.name"
+                             instance="de.hendrikfrahmann.giteaplugin.settings.GiteaPullRequestsSettingsConfigurable"/>
+    <applicationConfigurable id="de.hendrikfrahmann.giteaplugin.settings.actions"
+                             parentId="de.hendrikfrahmann.giteaplugin.settings.general"
+                             groupWeight="20"
+                             bundle="messages.GiteaBundle" key="settings.actions.display.name"
+                             instance="de.hendrikfrahmann.giteaplugin.settings.GiteaActionsSettingsConfigurable"/>
+    <applicationConfigurable id="de.hendrikfrahmann.giteaplugin.settings.mcp"
+                             parentId="de.hendrikfrahmann.giteaplugin.settings.general"
+                             groupWeight="10"
+                             bundle="messages.GiteaBundle" key="settings.mcp.display.name"
+                             instance="de.hendrikfrahmann.giteaplugin.settings.GiteaMcpSettingsConfigurable"/>
 
     <toolWindow id="Gitea Pull Requests" icon="/icons/giteaToolWindow.svg" anchor="left" doNotActivateOnStart="true"
                 factoryClass="de.hendrikfrahmann.giteaplugin.pullrequest.ui.toolwindow.GiteaToolWindowFactory"

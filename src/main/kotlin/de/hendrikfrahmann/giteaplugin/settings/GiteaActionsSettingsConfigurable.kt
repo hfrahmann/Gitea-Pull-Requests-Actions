@@ -2,7 +2,6 @@ package de.hendrikfrahmann.giteaplugin.settings
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.BoundConfigurable
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.AlignX
@@ -20,7 +19,7 @@ import de.hendrikfrahmann.giteaplugin.actions.workflow.run.GiteaLocalRunnerUi
 import de.hendrikfrahmann.giteaplugin.util.GiteaBundle
 
 /** `Settings | Tools | Gitea | Actions` – runs, artifacts, local workflow runs; child of [GiteaGeneralSettingsConfigurable]. */
-class GiteaActionsSettingsConfigurable(private val project: Project)
+class GiteaActionsSettingsConfigurable
   : BoundConfigurable(GiteaBundle.message("settings.actions.display.name"), HELP_TOPIC) {
 
   override fun createPanel(): DialogPanel {
@@ -45,7 +44,7 @@ class GiteaActionsSettingsConfigurable(private val project: Project)
       }
       row(GiteaBundle.message("settings.actions.artifacts.directory")) {
         textFieldWithBrowseButton(FileChooserDescriptorFactory.createSingleFolderDescriptor()
-                                    .withTitle(GiteaBundle.message("settings.actions.artifacts.directory.title")), project)
+                                    .withTitle(GiteaBundle.message("settings.actions.artifacts.directory.title")))
           .bindText({ settings.artifactsDirectory }, { settings.artifactsDirectory = it })
           .comment(GiteaBundle.message("settings.actions.artifacts.directory.comment"))
           .align(AlignX.FILL)
@@ -68,7 +67,7 @@ class GiteaActionsSettingsConfigurable(private val project: Project)
       val docker = runner.component.selectedValueMatches { it == GiteaLocalRunner.DOCKER }
       row(GiteaBundle.message("settings.local.runs.docker")) {
         textFieldWithBrowseButton(FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor()
-                                    .withTitle(GiteaBundle.message("settings.local.runs.docker.title")), project)
+                                    .withTitle(GiteaBundle.message("settings.local.runs.docker.title")))
           .bindText({ settings.dockerExecutable }, { settings.dockerExecutable = it })
           .comment(GiteaBundle.message("settings.local.runs.path.comment"))
           .align(AlignX.FILL)
@@ -81,7 +80,7 @@ class GiteaActionsSettingsConfigurable(private val project: Project)
       }.visibleIf(docker)
       row(GiteaBundle.message("settings.local.runs.binary")) {
         textFieldWithBrowseButton(FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor()
-                                    .withTitle(GiteaBundle.message("settings.local.runs.binary.title")), project)
+                                    .withTitle(GiteaBundle.message("settings.local.runs.binary.title")))
           .bindText({ settings.runnerBinary }, { settings.runnerBinary = it })
           .comment(GiteaBundle.message("settings.local.runs.binary.comment"))
           .align(AlignX.FILL)

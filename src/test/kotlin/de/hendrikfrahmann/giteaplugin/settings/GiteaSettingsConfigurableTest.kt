@@ -17,10 +17,11 @@ class GiteaSettingsConfigurableTest : BasePlatformTestCase() {
     assertEquals(-500, ep.groupWeight)
     assertEquals("Gitea", ep.displayName)
     assertEmpty(Configurable.PROJECT_CONFIGURABLE.getExtensions(project).filter { it.parentId == ep.id })
-    val general = Configurable.PROJECT_CONFIGURABLE.getExtensions(project).single { it.id == "de.hendrikfrahmann.giteaplugin.settings.general" }
+    // the Tools pages are application-level, like GiteaSettings
+    val general = Configurable.APPLICATION_CONFIGURABLE.extensionList.single { it.id == "de.hendrikfrahmann.giteaplugin.settings.general" }
     assertEquals("tools", general.parentId)
     assertEquals("settings.general.display.name", general.key)
-    val children = Configurable.PROJECT_CONFIGURABLE.getExtensions(project).filter { it.parentId == general.id }
+    val children = Configurable.APPLICATION_CONFIGURABLE.extensionList.filter { it.parentId == general.id }
     assertEquals(listOf("settings.pull.requests.display.name", "settings.actions.display.name", "settings.mcp.display.name"),
                  children.sortedByDescending { it.groupWeight }.map { it.key })
     assertNotNull(ActionManager.getInstance().getAction("Gitea.Open.Settings"))
@@ -30,7 +31,7 @@ class GiteaSettingsConfigurableTest : BasePlatformTestCase() {
 
   fun `test pages can be built and disposed`(): Unit = forbidSlowOperations {
     for (configurable in listOf(GiteaSettingsConfigurable(project), GiteaGeneralSettingsConfigurable(),
-                                GiteaPullRequestsSettingsConfigurable(), GiteaActionsSettingsConfigurable(project),
+                                GiteaPullRequestsSettingsConfigurable(), GiteaActionsSettingsConfigurable(),
                                 GiteaMcpSettingsConfigurable())) {
       try {
         assertNotNull(configurable.createComponent())
