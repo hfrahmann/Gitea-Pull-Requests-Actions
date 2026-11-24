@@ -22,7 +22,7 @@ class GiteaSettingsConfigurableTest : BasePlatformTestCase() {
     assertEquals("settings.general.display.name", general.key)
     val children = Configurable.PROJECT_CONFIGURABLE.getExtensions(project).filter { it.parentId == general.id }
     assertEquals(listOf("settings.pull.requests.display.name", "settings.actions.display.name", "settings.mcp.display.name"),
-                 children.map { it.key })
+                 children.sortedByDescending { it.groupWeight }.map { it.key })
     assertNotNull(ActionManager.getInstance().getAction("Gitea.Open.Settings"))
     assertNotNull(ActionManager.getInstance().getAction("Gitea.Open.GeneralSettings"))
     assertNotNull(ActionManager.getInstance().getAction("Gitea.Open.ActionsSettings"))

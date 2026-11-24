@@ -55,7 +55,7 @@
     <actionPromoter implementation="de.hendrikfrahmann.giteaplugin.ui.action.GiteaRefreshActionPromoter"/>
     <!-- Settings | Version Control | Gitea (accounts, connections), next to GitHub and GitLab (same parent and weight as
          theirs); the behaviour options are on Settings | Tools | Gitea (refresh) with the child pages Pull Requests,
-         Actions and MCP. All keep storing in de.hendrikfrahmann.giteaplugin.xml -->
+         Actions and MCP (in this order: the Settings tree sorts by groupWeight, then by name). All keep storing in de.hendrikfrahmann.giteaplugin.xml -->
     <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings"
                          parentId="project.propVCSSupport.Mappings"
                          groupWeight="-500"
@@ -67,14 +67,17 @@
                          instance="de.hendrikfrahmann.giteaplugin.settings.GiteaGeneralSettingsConfigurable"/>
     <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings.pullRequests"
                          parentId="de.hendrikfrahmann.giteaplugin.settings.general"
+                         groupWeight="30"
                          bundle="messages.GiteaBundle" key="settings.pull.requests.display.name"
                          instance="de.hendrikfrahmann.giteaplugin.settings.GiteaPullRequestsSettingsConfigurable"/>
     <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings.actions"
                          parentId="de.hendrikfrahmann.giteaplugin.settings.general"
+                         groupWeight="20"
                          bundle="messages.GiteaBundle" key="settings.actions.display.name"
                          instance="de.hendrikfrahmann.giteaplugin.settings.GiteaActionsSettingsConfigurable"/>
     <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings.mcp"
                          parentId="de.hendrikfrahmann.giteaplugin.settings.general"
+                         groupWeight="10"
                          bundle="messages.GiteaBundle" key="settings.mcp.display.name"
                          instance="de.hendrikfrahmann.giteaplugin.settings.GiteaMcpSettingsConfigurable"/>
 
