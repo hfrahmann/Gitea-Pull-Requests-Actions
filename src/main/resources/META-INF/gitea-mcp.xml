@@ -1,0 +1,11 @@
+<!--
+  Loaded only when the MCP Server plugin (com.intellij.mcpServer, bundled) is enabled: Gitea tools for AI assistants
+  connected to the IDE's MCP server, in the categories "Gitea Pull Requests" and "Gitea Actions". Off until the user turns
+  them on in the Gitea settings; everything touching com.intellij.mcpserver is in the mcp.server package.
+-->
+<idea-plugin>
+  <extensions defaultExtensionNs="com.intellij">
+    <mcpServer.mcpToolset implementation="de.hendrikfrahmann.giteaplugin.mcp.server.GiteaPullRequestsMcpToolset"/>
+    <mcpServer.mcpToolset implementation="de.hendrikfrahmann.giteaplugin.mcp.server.GiteaActionsMcpToolset"/>
+  </extensions>
+</idea-plugin>
