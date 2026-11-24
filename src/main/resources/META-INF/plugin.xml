@@ -54,7 +54,8 @@
     <!-- inside a Gitea view the Refresh shortcut (Cmd+R) only reloads it, not also Replace / Rerun -->
     <actionPromoter implementation="de.hendrikfrahmann.giteaplugin.ui.action.GiteaRefreshActionPromoter"/>
     <!-- Settings | Version Control | Gitea (accounts, connections), next to GitHub and GitLab (same parent and weight as
-         theirs); the behaviour options are on Settings | Tools | Gitea. Both keep storing in de.hendrikfrahmann.giteaplugin.xml -->
+         theirs); the behaviour options are on Settings | Tools | Gitea (refresh) with the child pages Pull Requests,
+         Actions and MCP. All keep storing in de.hendrikfrahmann.giteaplugin.xml -->
     <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings"
                          parentId="project.propVCSSupport.Mappings"
                          groupWeight="-500"
@@ -64,6 +65,18 @@
                          parentId="tools"
                          bundle="messages.GiteaBundle" key="settings.general.display.name"
                          instance="de.hendrikfrahmann.giteaplugin.settings.GiteaGeneralSettingsConfigurable"/>
+    <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings.pullRequests"
+                         parentId="de.hendrikfrahmann.giteaplugin.settings.general"
+                         bundle="messages.GiteaBundle" key="settings.pull.requests.display.name"
+                         instance="de.hendrikfrahmann.giteaplugin.settings.GiteaPullRequestsSettingsConfigurable"/>
+    <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings.actions"
+                         parentId="de.hendrikfrahmann.giteaplugin.settings.general"
+                         bundle="messages.GiteaBundle" key="settings.actions.display.name"
+                         instance="de.hendrikfrahmann.giteaplugin.settings.GiteaActionsSettingsConfigurable"/>
+    <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings.mcp"
+                         parentId="de.hendrikfrahmann.giteaplugin.settings.general"
+                         bundle="messages.GiteaBundle" key="settings.mcp.display.name"
+                         instance="de.hendrikfrahmann.giteaplugin.settings.GiteaMcpSettingsConfigurable"/>
 
     <toolWindow id="Gitea Pull Requests" icon="/icons/giteaToolWindow.svg" anchor="left" doNotActivateOnStart="true"
                 factoryClass="de.hendrikfrahmann.giteaplugin.pullrequest.ui.toolwindow.GiteaToolWindowFactory"
@@ -124,6 +137,8 @@
     <action id="Gitea.Open.Settings" class="de.hendrikfrahmann.giteaplugin.settings.GiteaOpenSettingsAction"
             icon="/icons/gitea.svg"/>
     <action id="Gitea.Open.GeneralSettings" class="de.hendrikfrahmann.giteaplugin.settings.GiteaOpenGeneralSettingsAction"
+            icon="AllIcons.General.Settings"/>
+    <action id="Gitea.Open.ActionsSettings" class="de.hendrikfrahmann.giteaplugin.settings.GiteaOpenActionsSettingsAction"
             icon="AllIcons.General.Settings"/>
     <action id="Gitea.Clone" class="de.hendrikfrahmann.giteaplugin.clone.GiteaCloneAction" icon="/icons/gitea.svg"/>
     <action id="Gitea.Share" class="de.hendrikfrahmann.giteaplugin.share.GiteaShareProjectAction" icon="/icons/gitea.svg">

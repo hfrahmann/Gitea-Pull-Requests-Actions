@@ -21,7 +21,7 @@ import de.hendrikfrahmann.giteaplugin.actions.workflow.GiteaWorkflowFiles
 import de.hendrikfrahmann.giteaplugin.actions.workflow.GiteaWorkflowRemotes
 import de.hendrikfrahmann.giteaplugin.api.request.GiteaActionsScope
 import de.hendrikfrahmann.giteaplugin.api.request.loadVariables
-import de.hendrikfrahmann.giteaplugin.settings.GiteaGeneralSettingsConfigurable
+import de.hendrikfrahmann.giteaplugin.settings.GiteaActionsSettingsConfigurable
 import de.hendrikfrahmann.giteaplugin.settings.GiteaLocalRunner
 import de.hendrikfrahmann.giteaplugin.settings.GiteaSettings
 import de.hendrikfrahmann.giteaplugin.util.GiteaBundle
@@ -138,11 +138,11 @@ class GiteaWorkflowRunState(private val configuration: GiteaWorkflowRunConfigura
       throw ExecutionException(GiteaBundle.message("workflow.run.error.read", path, e.localizedMessage ?: e.toString()), e)
     }
 
-  /** The runner isn't set up: show the Gitea settings and stop. */
+  /** The runner isn't set up: show the Gitea Actions settings and stop. */
   private fun notConfigured(message: String): Nothing {
     val project = configuration.project
     ApplicationManager.getApplication().invokeLater({
-      ShowSettingsUtil.getInstance().showSettingsDialog(project, GiteaGeneralSettingsConfigurable::class.java)
+      ShowSettingsUtil.getInstance().showSettingsDialog(project, GiteaActionsSettingsConfigurable::class.java)
     }, project.disposed)
     throw ExecutionException(message)
   }

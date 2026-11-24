@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Requires IntelliJ-based IDEs 2026.2 or newer.
-- The behaviour options (pull requests, refresh, Gitea Actions, local workflow runs, MCP tools) moved from
-  *Settings | Version Control | Gitea | Settings* to *Settings | Tools | Gitea*; accounts and connections stay under
-  *Version Control | Gitea*. Existing settings are kept.
+- The behaviour options moved from *Settings | Version Control | Gitea | Settings* to *Settings | Tools | Gitea*
+  (refresh), split into the pages *Pull Requests*, *Actions* (runs, artifacts, local workflow runs) and *MCP*; accounts
+  and connections stay under *Version Control | Gitea*. Existing settings are kept.
 
 ### Added
 
@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Actions tool window. Only visible rows are loaded.
 - Gitea tools for AI assistants via the IDE's MCP server (`giteapr_…`, categories "Gitea Pull Requests" and "Gitea
   Actions"): read pull requests, reviews, checks, runs and job logs; optionally also comment, review, merge, re-run and
-  dispatch. Off by default, see *Settings | Tools | Gitea*.
+  dispatch. Off by default, see *Settings | Tools | Gitea | MCP*.
 
 ## [1.0.5] - 2026-11-20
 

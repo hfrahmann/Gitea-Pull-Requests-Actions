@@ -90,7 +90,7 @@ internal class GiteaActionsToolWindowController(private val project: Project, pa
   fun manageContent(toolWindow: ToolWindow) {
     toolWindow.dontHideOnEmptyContent()
     toolWindow.setAdditionalGearActions(DefaultActionGroup(GiteaSwitchProjectAndAccountAction(),
-                                                           ActionManager.getInstance().getAction("Gitea.Open.GeneralSettings")))
+                                                           ActionManager.getInstance().getAction("Gitea.Open.ActionsSettings")))
     // the switch action reads the PR tool window's project VM (shared connection)
     val projectVm = GiteaToolWindowProjectViewModel.getInstance(project)
     toolWindow.contentManager.addUiDataProvider { sink -> sink[GiteaPullRequestsActionKeys.PROJECT_VM] = projectVm }

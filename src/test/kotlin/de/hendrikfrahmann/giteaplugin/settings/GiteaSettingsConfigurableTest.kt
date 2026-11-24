@@ -11,7 +11,7 @@ import de.hendrikfrahmann.giteaplugin.authentication.accounts.GiteaAccountCreden
 import de.hendrikfrahmann.giteaplugin.forbidSlowOperations
 
 class GiteaSettingsConfigurableTest : BasePlatformTestCase() {
-  fun `test accounts are under version control like github and gitlab, the options under tools`() {
+  fun `test accounts are under version control like github and gitlab, the options under tools with child pages`() {
     val ep = Configurable.PROJECT_CONFIGURABLE.getExtensions(project).single { it.id == "de.hendrikfrahmann.giteaplugin.settings" }
     assertEquals("project.propVCSSupport.Mappings", ep.parentId)
     assertEquals(-500, ep.groupWeight)
@@ -20,12 +20,18 @@ class GiteaSettingsConfigurableTest : BasePlatformTestCase() {
     val general = Configurable.PROJECT_CONFIGURABLE.getExtensions(project).single { it.id == "de.hendrikfrahmann.giteaplugin.settings.general" }
     assertEquals("tools", general.parentId)
     assertEquals("settings.general.display.name", general.key)
+    val children = Configurable.PROJECT_CONFIGURABLE.getExtensions(project).filter { it.parentId == general.id }
+    assertEquals(listOf("settings.pull.requests.display.name", "settings.actions.display.name", "settings.mcp.display.name"),
+                 children.map { it.key })
     assertNotNull(ActionManager.getInstance().getAction("Gitea.Open.Settings"))
     assertNotNull(ActionManager.getInstance().getAction("Gitea.Open.GeneralSettings"))
+    assertNotNull(ActionManager.getInstance().getAction("Gitea.Open.ActionsSettings"))
   }
 
   fun `test pages can be built and disposed`(): Unit = forbidSlowOperations {
-    for (configurable in listOf(GiteaSettingsConfigurable(project), GiteaGeneralSettingsConfigurable(project))) {
+    for (configurable in listOf(GiteaSettingsConfigurable(project), GiteaGeneralSettingsConfigurable(),
+                                GiteaPullRequestsSettingsConfigurable(), GiteaActionsSettingsConfigurable(project),
+                                GiteaMcpSettingsConfigurable())) {
       try {
         assertNotNull(configurable.createComponent())
         configurable.reset()
