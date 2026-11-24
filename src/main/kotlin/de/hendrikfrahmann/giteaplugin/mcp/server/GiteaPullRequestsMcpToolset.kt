@@ -33,18 +33,18 @@ data class GiteaMcpInlineComment(
 class GiteaPullRequestsMcpToolset : McpToolset {
   override fun isEnabled(): Boolean = GiteaMcpToolCalls.toolsEnabled()
 
-  // McpToolset methods of newer IDEs (not in the 2026.1 API this is compiled against) – without them 2026.2+ hides the
-  // toolset as experimental. No `override`: the JVM dispatches to them where the interface has them.
-  @Suppress("FunctionOnlyReturningConstant", "unused") // overrides the interface's method in newer IDEs
-  fun isExperimental(): Boolean = false
+  // McpToolset methods of 2026.3 (not in the 2026.2 API this is compiled against): user-configurable, the category's name
+  // and description in the MCP Server settings. No `override`: the JVM dispatches to them where the interface has them.
+  // the default is true from 2026.2 on, which hides the toolset
+  override fun isExperimental(): Boolean = false
 
-  @Suppress("FunctionOnlyReturningConstant", "unused") // see isExperimental
+  @Suppress("FunctionOnlyReturningConstant", "unused") // overrides the interface's method in 2026.3+
   fun isUserConfigurable(): Boolean = true
 
-  @Suppress("FunctionOnlyReturningConstant", "unused") // see isExperimental
+  @Suppress("FunctionOnlyReturningConstant", "unused") // see isUserConfigurable
   fun displayName(): String = "Gitea Pull Requests"
 
-  @Suppress("FunctionOnlyReturningConstant", "unused") // see isExperimental
+  @Suppress("FunctionOnlyReturningConstant", "unused") // see isUserConfigurable
   fun displayDescription(): String = "Pull requests, reviews and checks of the project's Gitea repositories"
 
   private suspend fun call(tool: suspend GiteaPullRequestsMcpService.() -> String): String =

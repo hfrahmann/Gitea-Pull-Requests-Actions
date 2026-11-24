@@ -2,6 +2,7 @@ package de.hendrikfrahmann.giteaplugin.settings
 
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.options.NoAutomaticReset
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import de.hendrikfrahmann.giteaplugin.api.GiteaServerPath
 import de.hendrikfrahmann.giteaplugin.authentication.GiteaOAuthService
@@ -34,18 +35,14 @@ class GiteaSettingsConfigurableTest : BasePlatformTestCase() {
     }
   }
 
-  fun `test window focus keeps a login that is not applied yet`() = withPendingLogin { configurable ->
-    resetUnmodifiedOnWindowFocus(configurable)
-    assertEquals(listOf("user"), configurable.accountsModel.accounts.map { it.name })
+  fun `test window focus doesn't reset the page and drop a login that is not applied yet`() {
+    assertInstanceOf(GiteaSettingsConfigurable(project), NoAutomaticReset::class.java)
   }
 
   fun `test reset by the user discards a login that is not applied yet`() = withPendingLogin { configurable ->
     configurable.reset()
     assertEmpty(configurable.accountsModel.accounts)
   }
-
-  /** Named like the platform method in `SettingsEditor` that calls `reset()` when the window gets the focus back. */
-  private fun resetUnmodifiedOnWindowFocus(configurable: GiteaSettingsConfigurable) = configurable.reset()
 
   private fun withPendingLogin(test: (GiteaSettingsConfigurable) -> Unit) {
     val configurable = GiteaSettingsConfigurable(project)

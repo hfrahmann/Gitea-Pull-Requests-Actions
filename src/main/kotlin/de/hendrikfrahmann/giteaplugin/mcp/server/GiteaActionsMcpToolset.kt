@@ -16,17 +16,17 @@ private const val WRITE = " Needs the setting \"Also allow changing pull request
 class GiteaActionsMcpToolset : McpToolset {
   override fun isEnabled(): Boolean = GiteaMcpToolCalls.toolsEnabled()
 
-  // see GiteaPullRequestsMcpToolset: McpToolset methods of newer IDEs, deliberately without `override`
-  @Suppress("FunctionOnlyReturningConstant", "unused") // overrides the interface's method in newer IDEs
-  fun isExperimental(): Boolean = false
+  // see GiteaPullRequestsMcpToolset: the 2026.3 McpToolset methods are deliberately without `override`
+  // the default is true from 2026.2 on, which hides the toolset
+  override fun isExperimental(): Boolean = false
 
-  @Suppress("FunctionOnlyReturningConstant", "unused") // see isExperimental
+  @Suppress("FunctionOnlyReturningConstant", "unused") // overrides the interface's method in 2026.3+
   fun isUserConfigurable(): Boolean = true
 
-  @Suppress("FunctionOnlyReturningConstant", "unused") // see isExperimental
+  @Suppress("FunctionOnlyReturningConstant", "unused") // see isUserConfigurable
   fun displayName(): String = "Gitea Actions"
 
-  @Suppress("FunctionOnlyReturningConstant", "unused") // see isExperimental
+  @Suppress("FunctionOnlyReturningConstant", "unused") // see isUserConfigurable
   fun displayDescription(): String = "Gitea Actions workflow runs, jobs and logs of the project's Gitea repositories"
 
   private suspend fun call(tool: suspend GiteaActionsMcpService.() -> String): String = GiteaMcpToolCalls.call(::GiteaActionsMcpService, tool)
