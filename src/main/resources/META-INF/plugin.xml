@@ -54,14 +54,14 @@
     <!-- inside a Gitea view the Refresh shortcut (Cmd+R) only reloads it, not also Replace / Rerun -->
     <actionPromoter implementation="de.hendrikfrahmann.giteaplugin.ui.action.GiteaRefreshActionPromoter"/>
     <!-- Settings | Version Control | Gitea (accounts, connections), next to GitHub and GitLab (same parent and weight as
-         theirs), with the child page "Settings" -->
+         theirs); the behaviour options are on Settings | Tools | Gitea. Both keep storing in de.hendrikfrahmann.giteaplugin.xml -->
     <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings"
                          parentId="project.propVCSSupport.Mappings"
                          groupWeight="-500"
                          displayName="Gitea"
                          instance="de.hendrikfrahmann.giteaplugin.settings.GiteaSettingsConfigurable"/>
     <projectConfigurable id="de.hendrikfrahmann.giteaplugin.settings.general"
-                         parentId="de.hendrikfrahmann.giteaplugin.settings"
+                         parentId="tools"
                          bundle="messages.GiteaBundle" key="settings.general.display.name"
                          instance="de.hendrikfrahmann.giteaplugin.settings.GiteaGeneralSettingsConfigurable"/>
 

@@ -54,7 +54,7 @@ interface GiteaMcpEnvironment {
 
 /** The setting gates, checked on every call: the IDE builds its tool list once per client session. */
 internal object GiteaMcpGates {
-  const val SETTINGS_PATH: String = "Settings | Version Control | Gitea | Settings"
+  const val SETTINGS_PATH: String = "Settings | Tools | Gitea"
 
   fun checkRead(env: GiteaMcpEnvironment) {
     if (!env.toolsEnabled) {

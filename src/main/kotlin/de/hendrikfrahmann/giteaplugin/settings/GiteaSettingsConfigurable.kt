@@ -47,7 +47,8 @@ import kotlinx.coroutines.launch
 
 /**
  * `Settings | Version Control | Gitea` – accounts, test connection, how to reach servers (default server, timeout, SSH,
- * pre-releases, remote hosts, custom OAuth apps). Behaviour options are on the child page [GiteaGeneralSettingsConfigurable].
+ * pre-releases, remote hosts, custom OAuth apps). Behaviour options are on `Settings | Tools | Gitea`
+ * ([GiteaGeneralSettingsConfigurable]).
  *
  * [NoAutomaticReset]: the non-modal Settings would reset the page when the window gets the focus back – a browser login
  * takes the focus, and coming back would drop the account that arrived meanwhile but isn't applied yet.

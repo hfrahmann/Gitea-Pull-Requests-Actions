@@ -22,7 +22,7 @@ import com.intellij.ui.layout.selectedValueMatches
 import de.hendrikfrahmann.giteaplugin.actions.workflow.run.GiteaLocalRunnerUi
 import de.hendrikfrahmann.giteaplugin.util.GiteaBundle
 
-/** `Settings | Version Control | Gitea | Settings` – pull requests, refresh, Gitea Actions, local workflow runs, MCP tools; child of [GiteaSettingsConfigurable]. */
+/** `Settings | Tools | Gitea` – pull requests, refresh, Gitea Actions, local workflow runs, MCP tools; the accounts are on [GiteaSettingsConfigurable]. */
 class GiteaGeneralSettingsConfigurable(private val project: Project)
   : BoundConfigurable(GiteaBundle.message("settings.general.display.name"), HELP_TOPIC) {
 
