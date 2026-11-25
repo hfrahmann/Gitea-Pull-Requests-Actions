@@ -56,6 +56,7 @@ class GiteaActionsSettingsConfigurable
     }
   }
 
+  @Suppress("DialogTitleCapitalization") // the runner texts start with the program names gitea-runner / act_runner
   private fun Panel.localRunsGroup(settings: GiteaSettings) {
     group(GiteaBundle.message("settings.local.runs.group")) {
       lateinit var runner: Cell<ComboBox<GiteaLocalRunner>>
