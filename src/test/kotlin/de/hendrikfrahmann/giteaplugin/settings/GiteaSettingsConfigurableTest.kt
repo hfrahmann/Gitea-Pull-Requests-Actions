@@ -11,19 +11,28 @@ import de.hendrikfrahmann.giteaplugin.authentication.accounts.GiteaAccountCreden
 import de.hendrikfrahmann.giteaplugin.forbidSlowOperations
 
 class GiteaSettingsConfigurableTest : BasePlatformTestCase() {
-  fun `test settings page is registered under version control like github and gitlab`() {
+  fun `test accounts are under version control like github and gitlab, the options under tools with child pages`() {
     val ep = Configurable.PROJECT_CONFIGURABLE.getExtensions(project).single { it.id == "de.hendrikfrahmann.giteaplugin.settings" }
     assertEquals("project.propVCSSupport.Mappings", ep.parentId)
     assertEquals(-500, ep.groupWeight)
     assertEquals("Gitea", ep.displayName)
-    val children = Configurable.PROJECT_CONFIGURABLE.getExtensions(project).filter { it.parentId == ep.id }
-    assertEquals(listOf("settings.general.display.name"), children.map { it.key })
+    assertEmpty(Configurable.PROJECT_CONFIGURABLE.getExtensions(project).filter { it.parentId == ep.id })
+    // the Tools pages are application-level, like GiteaSettings
+    val general = Configurable.APPLICATION_CONFIGURABLE.extensionList.single { it.id == "de.hendrikfrahmann.giteaplugin.settings.general" }
+    assertEquals("tools", general.parentId)
+    assertEquals("settings.general.display.name", general.key)
+    val children = Configurable.APPLICATION_CONFIGURABLE.extensionList.filter { it.parentId == general.id }
+    assertEquals(listOf("settings.pull.requests.display.name", "settings.actions.display.name", "settings.mcp.display.name"),
+                 children.sortedByDescending { it.groupWeight }.map { it.key })
     assertNotNull(ActionManager.getInstance().getAction("Gitea.Open.Settings"))
     assertNotNull(ActionManager.getInstance().getAction("Gitea.Open.GeneralSettings"))
+    assertNotNull(ActionManager.getInstance().getAction("Gitea.Open.ActionsSettings"))
   }
 
   fun `test pages can be built and disposed`(): Unit = forbidSlowOperations {
-    for (configurable in listOf(GiteaSettingsConfigurable(project), GiteaGeneralSettingsConfigurable(project))) {
+    for (configurable in listOf(GiteaSettingsConfigurable(project), GiteaGeneralSettingsConfigurable(),
+                                GiteaPullRequestsSettingsConfigurable(), GiteaActionsSettingsConfigurable(),
+                                GiteaMcpSettingsConfigurable())) {
       try {
         assertNotNull(configurable.createComponent())
         configurable.reset()

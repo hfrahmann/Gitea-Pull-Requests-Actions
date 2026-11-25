@@ -14,11 +14,20 @@ class GiteaOpenSettingsAction : DumbAwareAction() {
   }
 }
 
-/** `Gitea.Open.GeneralSettings`: the "Settings" page (refresh, Gitea Actions, …). */
+/** `Gitea.Open.GeneralSettings`: `Tools | Gitea` (refresh, with the child pages Pull Requests, Actions and MCP). */
 class GiteaOpenGeneralSettingsAction : DumbAwareAction() {
   override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
   override fun actionPerformed(e: AnActionEvent) {
     ShowSettingsUtil.getInstance().showSettingsDialog(e.project, GiteaGeneralSettingsConfigurable::class.java)
+  }
+}
+
+/** `Gitea.Open.ActionsSettings`: `Tools | Gitea | Actions` (runs, artifacts, local workflow runs). */
+class GiteaOpenActionsSettingsAction : DumbAwareAction() {
+  override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+
+  override fun actionPerformed(e: AnActionEvent) {
+    ShowSettingsUtil.getInstance().showSettingsDialog(e.project, GiteaActionsSettingsConfigurable::class.java)
   }
 }
